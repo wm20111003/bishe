@@ -1,0 +1,12 @@
+<#macro map >
+
+<script src='${ctx}/js/coms/map/map.js'></script>
+	<div id="_mapdialog" title="选择经纬度" >
+		<div>
+		<input type="text" id="_seachrAddress" name="_seachrAddress" class="gl-input-box" placeholder="输入查询地址"/>
+		<input type="button" onclick="search();" value="查询" class="gl-button"/>
+		<span style="color: red">点击地图选取经纬度</span>
+		</div>
+		<div id="_allmap"  style="width: 600px;height:400px;top:0px"></div>
+	</div>
+</#macro>

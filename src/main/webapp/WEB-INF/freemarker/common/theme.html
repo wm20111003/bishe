@@ -1,0 +1,90 @@
+
+
+
+
+<!-- 主题表格 -->
+<#macro zhutitab  m='' rm=''>
+   <#assign listos=['pc','mobile','weixin']  listmodel=['site','channel','content'] />
+   <div class="tabbable"  id="div_tab">
+			<ul id="myTab4" class="nav nav-tabs">
+                <@li_ostype ostype='pc'  osname='电脑' mark="${m}" icon='fa fa-laptop' />
+                <@li_ostype ostype='mobile' osname='手机' mark="${m}" icon='fa fa-globe'/>
+                <@li_ostype ostype='weixin' osname='微信' mark="${m}" icon='fa fa-comments'/>
+			</ul>
+            
+	        <div class="tab-content">
+	                 <#list listos as os>
+						<div class="tab-pane" id="div_${os}_${m}">
+							<div class="tabbable tabs-left">
+							 	<@nav_left ostype='${os}' mark='${m}'/>
+								<div class="tab-content">
+                                        <#list listmodel as mod>
+                                                  <#if rm=''>
+                                                     <@tabshow ostype='${os}' modelType='${mod}' mark='${m}'  />
+                                                  <#else>
+                                                     <@tabshow ostype='${os}' modelType='${mod}' mark='${m}' radioModel='${mod}' />
+                                                  </#if>
+                                        </#list>
+								</div>
+							</div>
+						</div>
+	                 </#list> 
+	         </div>
+	</div>
+</#macro>
+
+<!-- 平台导航 -->
+<#macro li_ostype  ostype=''  osname=''  mark=''  icon='' iconSize='bigger-110' >
+  			<li class="" id="li_${ostype}_${mark}">
+				<a href="#div_${ostype}_${mark}" data-toggle="tab">
+					<i class="blue ace-icon ${icon} ${iconSize}"></i>
+					${osname!''}
+				</a>
+			</li>
+</#macro>
+
+<!-- 主题显示表格 -->
+<#macro tabshow ostype='' modelType='' mark='' radioModel=''>
+<div class="tab-pane" id="div_${ostype!''}_${modelType!''}_${mark}">
+	<table class="table table-bordered">
+	<tbody>
+		<@cms_theme_list ostype=ostype modelType=modelType >
+			  <#list theme_list as c>
+			    <#if ((c_index+1) % 3) ==1>
+			    <tr>
+			    </#if>
+			   <td>
+			   <div style="width:150px; height:150px;"><img class="imgtheme" id="${(c.id)!''}" style="width:100%;height: 100%;" src="${ctx}${(c.imgfile)!''}"/></div>
+			   <div><input type="radio" id="${(c.id)!''}a" name="${ostype}${radioModel}${mark}" value="${(c.id)!''}" /> ${(c.name)!""}</div> 
+			   </td>
+			    <#if ((c_index+1) % 3) ==0>
+			     </tr>
+			    </#if>
+			  </#list>
+		</@cms_theme_list>
+	</tbody>
+	</table>	
+</div>
+</#macro> 
+
+
+
+<!-- 左导航 -->
+<#macro nav_left ostype=''  mark='' >
+		<ul id="myTab3" class="nav nav-tabs">
+			<@li_modelType ostype="${ostype}" modelType="site" modelName='站点' mark="${mark}" icon='glyphicon glyphicon-home'/>
+			<@li_modelType ostype="${ostype}" modelType="channel" modelName='栏目' mark="${mark}" icon='glyphicon glyphicon-tag'/>
+			<@li_modelType ostype="${ostype}" modelType="content" modelName='内容' mark="${mark}" icon='glyphicon glyphicon-edit'/>
+		</ul>
+</#macro>
+
+<!-- nav导航 -->
+<#macro li_modelType  ostype=''  modelType=''  modelName=''  mark='' icon='' iconSize='bigger-110'>
+  			<li class="" id="li_${ostype}_${modelType!''}_${mark!''}">
+				<a href="#div_${ostype}_${modelType!''}_${mark!''}" data-toggle="tab">
+					<i class="blue ace-icon  ${icon} ${iconSize}"></i>
+					${modelName!''}
+				</a>
+			</li>
+</#macro>
+

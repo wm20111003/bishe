@@ -1,0 +1,77 @@
+<#import "/userpage/${userAccount}/${siteId}/common/common.html" as cmMacro />  
+<#assign mctx='${ctx}/userstatic/common' />
+ <@cmMacro.head title='课程案例'/>
+		<style type="text/css">
+			body{background: url(${mctx}/images/bg2.jpg) no-repeat;}
+			.connel dd b{width: 100px;display: inline-block;text-align: right;padding: 5px 15px;}
+			.connel dd{*overflow: hidden; *zoom: 1;padding: 5px 10px;border-bottom: 1px solid #ddd;}
+			.connel dd span.time{padding-right: 20px;}
+			.connel dd:after{display: table;content: "";width: 0;clear: both;}
+			.lg_tab{padding:3px 15px;}
+			.lg_tab:hover{color:#999;}
+			.lg_tab.active{border-bottom:3px solid blue;}
+		</style>
+	</head>
+	<body>
+		<@cmMacro.top/>
+		<@cmMacro.navigator channelSort='course'/>
+			
+		<div class="container mg-t20">
+			<div class="row" style="min-height:420px">
+				<div class="col5">
+					<dl class="connel">
+						<dt>课程案例</dt>
+					</dl>
+				</div>
+				
+				<div class="col19">
+					<dl class="connel">
+						<dt><a href="javascript:" class="lg_tab active" data="ch">中文</a><a href="javascript:" class="lg_tab" data="en">English</a></dt>
+					</dl>
+						<div class="china">
+						<@sp_course_list siteId='a16' pageSize='15' pageIndex='1' type='ch'>
+						<#if course_list??>
+						  <dl class="connel">
+							<#list course_list as c>
+								<dd><a href="${ctx}/${c.ftlPath!''}" class="left">${c.ftlName!''} </a><span class="right">主教:${c.author!''}</span><span class="right time">${(c.createDate!'')?string('yyyy-MM-dd HH:mm:ss')}</span></dd>
+						  	</#list>
+						  </dl>
+						  </#if>
+						</@sp_course_list>
+						</div>
+						 <div class="eng" style="display:none;">
+						<@sp_course_list siteId="${siteId}" type="en" pageIndex="1" pageSize="15">
+							<#if course_list??>						
+						 <dl class="connel">
+						 <#list course_list as c>
+							<dd><a href="${ctx}/${c.ftlPath!''}" class="left">${c.ftlName!''} </a><span class="right">主教:${c.author!''}</span><span class="right time">${(c.createDate!'')?string('yyyy-MM-dd HH:mm:ss')}</span></dd>
+						  </#list>
+						  </dl>
+						  </#if>
+						</@sp_course_list>
+						</div> 
+				</div>
+			</div>
+		</div>
+<@cmMacro.foot siteId='${siteId}' ostype='${ostype}' index=1 />	
+	<script type="text/javascript">
+		$(function(){
+			$('.lg_tab').each(function(i,obj){
+				$(obj).on('click',function(){
+					if($(this).attr('data') == 'ch'){
+						$('.lg_tab').removeClass('active');
+						$(this).addClass('active'); 
+						$('.eng').slideUp();
+						$('.china').slideDown();
+					}
+					if($(this).attr('data') == 'en'){
+						$('.lg_tab').removeClass('active');
+						$(this).addClass('active');
+						$('.eng').slideDown();
+						$('.china').slideUp();
+					}
+				})
+			})
+		})
+	</script>
+	</body>

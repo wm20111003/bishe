@@ -1,0 +1,56 @@
+<#import "/userpage/${userAccount}/${siteId}/common/common.html" as cmMacro />  
+<#assign mctx='${ctx}/userstatic/common' />
+ <@cmMacro.head title='新闻动态'/>
+		<style type="text/css">
+			body{background: url(${mctx}/images/bg2.jpg) no-repeat;}
+			.connel dd b{width: 100px;display: inline-block;text-align: right;padding: 5px 15px;}
+			.connel dd{*overflow: hidden; *zoom: 1;padding: 5px 10px;border-bottom: 1px solid #ddd;}
+			.connel dd span.time{padding-right: 20px;}
+			.connel dd:after{display: table;content: "";width: 0;clear: both;}
+			h1.center,p.center{text-align: center;margin: auto;}
+			.newsList ul li{text-indent: 2em;line-height: 30px;letter-spacing: .5;margin-top: 20px;}
+		</style>
+	</head>
+	<body>
+		<@cmMacro.top/>
+		<@cmMacro.navigator channelSort='news'/>
+			
+		<div class="container mg-t20">
+			<div class="row">
+				<div class="col16">
+					<h1 class="center">毕业生成功举办毕业典礼</h1>
+					<p class="center" style="margin: 10px auto;"><small>2015年4月21日&nbsp;17:32:18 &nbsp;来源:学委会</small></p>
+					<div class="newstw">
+						<embed name="PlayerCtrl" width="100%" height="300" id="PlayerCtrl"  src="${mctx}/video/m.swf" type="application/x-shockwave-flash" wmode="window" allowfullscreen="true" allowscriptaccess="always" quality="high" bgcolor="#000000">
+					</div>
+					<div class="newsList">
+						<ul>
+							<li>师生浓浓袍泽情，寄语殷殷启新程。四月，是青春飞扬的花季。20日上午，求实学院院求实会堂里，师生欢会，重逢与离别同在，笑语与泪水连珠，汇成了情感的海洋。青岛求实职业技术学院2015届毕业典礼在此隆重举行，求实学院2015届毕业生顺利完成学业，带着深深的祝福，踏上了繁华似锦的前程。</li>
+							<li>应邀到会祝贺的领导和嘉宾有：青岛市政协副主席杨宏钧、山东省国际友好联络会主任郝卫东、青岛市政协教科文卫体委员会主任齐光辉、青岛市城阳区政协副主席牛爱春、山东陆军预备役高炮师副参谋长李书田、山东陆军预备役高炮师二团政委孙正金、山东儒商研究会副会长、山东省政协委员宫振法等。</li>
+							<li>上午10时，典礼在雄壮的国歌、校歌声中开始。大会表彰了63名优秀毕业生，并为他们颁发了证书。2015届优秀毕业生李爽、商学院教师郭丽丽、毕业生家长代表王雅珍先后发言，他们以同样真挚的情感、浪漫的语言，表达心声，奉上祝福和希望，祝福毕业的学生前程似锦、事业有成，祝福老师们工作顺利、幸福健康，祝福求实学院再创佳绩，走向更加辉煌的明天。</li>
+							<li>求实学院董事长林夕宝出席了典礼。院长张光兴做了热情洋溢的讲话，他引经据典、语重心长地寄语毕业生们，一定要用好一技之长；要锲而不舍，精通技艺；要坚韧不拔，拼搏进取，力争在社会上安身立命，早传佳音。</li>
+						</ul>
+					</div>
+				</div>
+				<@cms_content_list ctx='${ctx}' siteId='${siteId}' ostype='pc'>
+				<#if content_list??>
+				<div class="col8">
+					<#list content_list as cl>
+					<dl class="connel">
+						<dt>${cl.keywords!''}</dt>
+						<dd><a href="javascript:" onclick="_href('${cl.id}')">${cl.title!''} </a></dd>
+					</dl>
+					</#list>
+				</div>
+				</#if>
+				</@cms_content_list>
+			</div>
+		</div>
+<@cmMacro.foot siteId='${siteId}' ostype='${ostype}' index=1 />	
+<script type="text/javascript">
+function _href(id){
+	window.location.href='${ctx}/front/content/contentInfo?cid='+id;
+}
+</script>
+	</body>
+

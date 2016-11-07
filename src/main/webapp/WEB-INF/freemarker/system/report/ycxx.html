@@ -1,0 +1,118 @@
+ <#escape x as x?html>
+<style type="text/css">
+#placeholder {
+	width: 90%;
+	height: 300px;
+}
+
+#placeholder2 {
+	width: 90%;
+	height: 300px;
+}
+</style>
+<script type="text/javascript" src="${ctx}/js/echarts/esl.js"></script>
+<script type="text/javascript" src="${ctx}/js/bar.js"></script>
+<script type="text/javascript" src="${ctx}/js/exceptionPie.js"></script>
+<script type="text/javascript" src="${ctx}/js/bigAge.js"></script>
+
+
+
+<script type="text/javascript">
+	$(function() {
+		var initiallize = new Array("year", "year1", "age");
+		for (var i = 0; i < initiallize.length; i++) {
+			defaultDate(initiallize[i]);
+		}
+		_findBar();
+		_findException();
+		_findBig();
+		
+		
+
+	});
+
+	function _findBar() {
+		var now_year = $("#year").find("option:selected").text();
+		findBar(now_year);
+	}
+
+	function _findException() {
+		var year = $("#year1").find("option:selected").text();
+		var begin = $("#begin").val();
+		var end = $("#end").val();
+		var exception = $("#exception").val();
+		var schoolName = $("#schoolName").find("option:selected").text();
+		findExceptionPie(year, begin, end, exception, schoolName);
+
+	}
+
+	function _findBig() {
+		var year = $("#age").find("option:selected").text();
+		var startAge = $("#startAge").val();
+		var endAge = $("#endAge").val();
+		findBigAge(year, startAge, endAge);
+
+	}
+
+	function defaultDate(id) {
+		var _default = new Date();
+		for (var i = 2014; i <= _default.getFullYear(); i++) {
+			$("#" + id).append("<option value="+i+">" + i + "</option>");
+		}
+
+	}
+</script>
+
+
+
+<div>
+	<span class="position: relative; float: right;">开始时间<select
+		name="year" id="year" onchange="_findBar();"></select></span>
+</div>
+
+<div class="row">
+	<div class="col-sm-6">
+		<div id="placeholder" style="width: 600px;"></div>
+	</div>
+	<div>
+		<span class="position: relative; float: right;">开始时间<select
+			name="year" id="year1" onchange="findExceptionPie();">
+
+		</select>开始年龄<input type="text" name="startAge" id="begin"
+			style="width: 40px;" /> 结束年龄<input type="text" name="startAge"
+			id="end" style="width: 40px;" /> <select name="schoolName"
+			id="schoolName">
+			 <#if orgList??> <#list orgList as org>
+				<option value="${(org.name)!''}">${(org.name)!''}</option> 
+				</#list>
+				</#if>
+		</select> <select name="exception" id="exception">
+				<option value="8">地址位置异常</option>
+				<option value="2">手机更换</option>
+				<option value="4">手机号码异常</option>
+		</select> <input type="button" value="查看"  onclick="_findException();" class="btn  btn-sm  btn-primary" />
+
+
+		</span>
+	</div>
+	<div class="col-sm-6">
+		<div id="chat" style="width: 600px; height: 300px;"></div>
+
+	</div>
+
+	<div class="col-sm-6">
+		<select id="age"></select> <span>开始年龄<input type="text"
+			id="startAge" /> 结束年龄<input type="text" id="endAge" /> <input
+			type="button" value="查看" onclick="_findBig();"
+			class="btn  btn-sm  btn-primary" />
+
+		</span>
+		<div id="school" style="width: 600px; height: 300px;"></div>
+	</div>
+
+</div>
+
+
+
+
+</#escape>

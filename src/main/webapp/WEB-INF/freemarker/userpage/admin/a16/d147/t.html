@@ -1,0 +1,94 @@
+<#import "/userpage/${userAccount}/${siteId}/common/common.html" as cmMacro />  
+<#assign mctx='${ctx}/userstatic/common' />
+ <@cmMacro.head title='作业下载'/>
+<link rel="stylesheet" type="text/css" href="${mctx}/css/uploadify.css"/>
+<script type="text/javascript" src="${mctx}/js/uploadify/jquery.uploadify.min.js"></script>
+		<style type="text/css">
+			body{background: url(${mctx}/images/bg2.jpg) no-repeat;}
+			.connel dd b{width: 100px;display: inline-block;text-align: right;padding: 5px 15px;}
+			.connel dd{*overflow: hidden; *zoom: 1;padding: 5px 10px;border-bottom: 1px solid #ddd;}
+			.connel dd span.time{padding-right: 20px;}
+			.connel dd:after{display: table;content: "";width: 0;clear: both;}
+			.uploadbtn{background: #009900;color:#fff;padding:5px 10px;border-radius:5px;margin-right:20px;}
+			.uploadbtn:hover{color:#fff !important;}
+			.downIcon{float:right;padding:0 10px;position:relative;top:-2px;}
+		</style>
+	</head>
+	<body>
+		<@cmMacro.top/>
+		<@cmMacro.navigator channelSort='downwork'/>
+			
+		<div class="container mg-t20">
+			<div class="row">
+				<div class="col5">
+					<dl class="connel">
+						<dt>上传作业</dt>
+						<dd><input id="file_upload" type="file" name="file"/>
+            				<a href="javascript:$('#file_upload').uploadify('upload', '*')" class="uploadbtn">上传</a> 
+            				<a href="javascript:$('#file_upload').uploadify('stop')">停止</a>
+            			</dd>
+					</dl>
+				</div>
+				<@sp_document_list siteId='${siteId}' pageSize='15' pageIndex='1'>
+				<div class="col19" style="min-height:420px;">
+					<dl class="connel">
+						<dt>作业下载</dt>
+						<#if document_list??>
+							<#list document_list as dc>
+								<dd><a href="${ctx}/${dc.ftlPath!''}" class="left">${dc.ftlName!''}</a>
+								<a href="${ctx}/front/workdocument/download/file?ftlPath=${dc.ftlPath!''}" class="downIcon"><img src="${mctx}/images/down1.png" width="35" class="downimg"/></a>
+								<span style="float:right">&nbsp;&nbsp;<strong>作者:</strong>${dc.author!''}</span><span class="right time">${(dc.createDate!'')?string('yyyy-MM-dd HH:mm:ss')}</span></dd>
+							</#list>
+						</#if>
+					</dl>
+				</div>
+				</@sp_document_list>
+			</div>
+		</div>
+		<@cmMacro.foot siteId='${siteId}' ostype='${ostype}' index=1 />	
+		<script type="text/javascript">
+		/*下载js*/
+		$('.downimg').hover(function(){
+			$(this).attr('src','${mctx}/images/down.png');
+		},function(){
+			$(this).attr('src','${mctx}/images/down1.png');
+		})
+		/*上传js*/
+		 $('#file_upload').uploadify({
+             'swf'      : '${mctx}/js/uploadify/uploadify.swf',
+             'uploader' : '${ctx}/front/workdocument/document/upload',
+             'height': 25,
+             'whith' :120,
+             'auto'  : false,
+             'fileDataName':'file',
+             'buttonText' : '选择文件...',
+             'fileTypeExts' : '*.doc; *.pdf; *.ppt; *.zip;*.rar',
+             'multi'    : false,
+             'method'   :'post',
+             'debug':false,
+             'onUploadStart' : function(file) {
+                
+                 },
+             'onUploadSuccess' : function(file, data, response) {
+                 if(data == 'true'){
+                		layer.alert('上传成功!',{icon:2},function(index){
+                			location.reload();
+                			layer.close(index)
+                		});
+                	 }
+                 if(data =='false'){
+                	 layer.alert('请先登录',{},function(index){
+                			window.location.href="${ctx}/front/commonDirect?mark=login&siteId=${siteId}&ostype=${ostype}"
+                			layer.close(index)
+                	 });
+                	 
+                 }
+             },
+             'onUploadError' : function(file, errorCode, errorMsg, errorString) {
+                /*  alert('The file ' + file.name + ' could not be uploaded: ' + errorString); */
+                } 
+
+         });
+		</script>
+	</body>
+

@@ -1,0 +1,42 @@
+
+
+<SCRIPT type="text/javascript">
+<!--
+	var orgcheckBoxSetting = {
+		check: {
+			enable: true,
+			chkStyle: "checkbox",
+			chkboxType:  { "Y" : "", "N" : "" }
+		},
+		data : {
+			simpleData : {
+				enable : true,
+				idKey : "id",
+				pIdKey : "pid",
+				rootPId : "null",
+			}
+		}
+	};
+	
+
+	$(document).ready(function() {
+		jQuery.post("${ctx}/system/org/list/json",
+				function(_json) {
+					if (_json.status == "success") {
+						$.fn.zTree.init($("#orgCheckBoxTree"), orgcheckBoxSetting,_json.data);
+						
+						var zTree =$.fn.zTree.getZTreeObj("orgCheckBoxTree");
+						zTree.expandAll(true);
+						checkedZtreeNodes(jQuery("#orgIds").val(),"orgCheckBoxTree");
+					} else {
+						myalert(_json.message);
+					}
+				});
+	});
+	
+//-->
+</SCRIPT>
+
+<div>
+	<ul id="orgCheckBoxTree" class="ztree"></ul>
+</div>

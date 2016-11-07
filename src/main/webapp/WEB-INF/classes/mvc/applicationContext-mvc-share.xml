@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx.xsd 
+	    http://www.springframework.org/schema/mvc
+         http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd"
+	default-lazy-init="false">
+
+
+
+
+	<bean id="freemarkerConfiguration"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="location" value="classpath:freemarker.properties" />
+	</bean>
+
+	<bean id="freeMarkerConfigurer"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath" value="/WEB-INF/freemarker/" />
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="freemarkerSettings" ref="freemarkerConfiguration" />
+		<property name="freemarkerVariables">
+			<map>
+				<entry key="shiro" value-ref="shiroTags" />
+				<!-- CMS 标签 -->
+				<entry key="cms_channel_list" value-ref="channelListDirective" />
+				<entry key="cms_theme_list" value-ref="themeListDirective" />
+				<entry key="cms_content_list" value-ref="contentListDirective" />
+				<entry key="cms_content_detail" value-ref="contentDetailDirective" />
+				<entry key="cms_friendlink_list" value-ref="friendlinkListDirective" />
+				<entry key="cms_ppt_list" value-ref="pptListDirective" />
+				<entry key="cms_channel_sort" value-ref="channelSortDirective" />
+				<entry key="cms_channel_child" value-ref="channelChildDirective" />
+				<entry key="cms_channel_detail" value-ref="channelDetailDirective" />
+				<entry key="cms_channel_parent" value-ref="channelParentDirective" />
+				<!-- member标签 -->
+				<entry key="sp_member_bean" value-ref="memberDirective" />
+				
+				
+				<!-- 档案记录表 -->
+				<entry key="sp_record_bean" value-ref="recordDirective"/>
+				<!-- 作业文档 -->
+				<entry key="sp_document_list" value-ref="documentListDirective"/>
+				<!-- 课程资料 -->
+				<entry key="sp_course_list" value-ref="courseListDirective"/>
+				<!-- 趣味实验 -->
+				<entry key="sp_experiment_list" value-ref="experimentDirective"/>
+				<!-- 视频资料 -->
+				<entry key="sp_video_list" value-ref="videoListDirective"/>
+			</map>
+		</property>
+	</bean>
+
+
+</beans>

@@ -1,0 +1,71 @@
+<#import "/userpage/${userAccount}/${siteId}/common/common.html" as cmMacro />  
+<#assign mctx='${ctx}/userstatic/common' />
+<#import "/common/tag.html" as tag />
+ <@cmMacro.head title='账户注册'/>
+<script type="text/javascript" src="${mctx}/js/Validform_v5.3.2_min.js"></script>
+		<style type="text/css">
+			.lg-top{background: url(${mctx}/images/bg3.jpg) repeat-x;}
+			a.reg{text-decoration: underline;color: purple;}
+			.rg-tab{margin-top: 30px;}
+			.rg-tab tr td .btn{background: #E03437;padding: 5px 25px;color: #FFFFFF;outline: none;line-height: normal;}
+			.rg-tab tr td{line-height: 40px;padding: 5px 5px 5px 10px;}
+			.rg-tab tr td input[type=text],.rg-tab tr td input[type=password]{height: 30px;width: 240px;}
+		</style>
+	</head>
+	<body>
+		<div class="lg-top">
+			<div class="container">
+				<img src="${mctx}/images/head.jpg"/>
+			</div>
+		</div>
+		<div class="container mg-t30">
+			<div class="row">
+				<div class="col12">
+					<form action="${ctx}/front/spmember/update" method="post" id="regForm">
+						<table border="0" cellspacing="0" cellpadding="0" class="rg-tab">
+							<tr><td>用户名</td><td><input type="text" name="name" placeholder="请输入用户名" id="username" datatype="s2-18" nullmsg="请输入用户名" errormsg="用户名至少4位最多18位"/></td></tr>
+							<tr><td>手机号</td><td><input type="text" name="mobile" placeholder="请输入手机号" id="mobile" datatype="m" ignore="ignore" errormsg="请输入正确的手机号"/></td></tr>
+							<tr><td>密码</td><td><input type="password" name="password" placeholder="请输入密码" datatype="s4-18" nullmsg="请输入密码" errormsg="密码至少4位最多18位"/></td></tr>
+							<tr><td>确认密码</td><td><input type="password" name="repwd" placeholder="请再次输入密码" datatype="*" recheck="password" nullmsg="请再次输入密码" errormsg="两次输入的密码不一致"/></td></tr>
+							<tr><td>性别</td><td><input type="radio" name="sex" checked="checked" value="男" id="man"/><label for="man">男</label><input type="radio" name="sex" id="women" value="女" /><label for="women">女</label></td></tr>
+							<tr><td>邮箱</td><td><input type="text" name="email" datatype="e" errormsg="请正确输入邮箱地址"/></tr>
+							<tr><td class="center" colspan="2"><button type="button" class="btn" onclick="submitForm();">立即注册</button><small>已有账号?<a href="<@tag.findChannelBySort 'login'/>" class="reg">登录</a></small></tr>
+						</table>
+					</form>
+				</div>
+				<div class="col12" style="text-align: right;">
+					<img src="${mctx}/images/example2.jpg" width="80%" style="margin-top: 50px;" />
+				</div>
+			</div>
+		</div>
+		<div style="margin-top:100px;">&nbsp;</div>
+<@cmMacro.foot siteId='${siteId}' ostype='${ostype}' index=1 />	
+<script type="text/javascript">
+var demo=$('#regForm').Validform();
+var regFM=$('#regForm');
+function submitForm(){
+	if(!(demo.check())){
+		$.Showmsg("请正确填写信息");
+		return false;
+	}
+	$.ajax({
+		url:"${ctx}/front/spmember/update",
+		type:"post",
+		data:regFM.serialize(),
+		dataType:'json',
+		success:function(_data){
+			if(_data.status == "success"){
+				layer.alert('注册成功',{},function(index){
+					window.location.href="${ctx}/front/commonDirect?mark=login&siteId=${siteId}&ostype=${ostype}";
+					layer.close(index);
+				});
+			}else{
+				layer.alert(_data.message);
+			}
+			
+		}
+	});
+}
+</script>
+	</body>
+</html>

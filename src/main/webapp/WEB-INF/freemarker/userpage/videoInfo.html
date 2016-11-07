@@ -1,0 +1,57 @@
+<#import "/userpage/common/common.html" as cmMacro />  
+<#assign mctx='${ctx}/userstatic/common' />
+ <@cmMacro.head title='视频资料'/>
+		<style type="text/css">
+			.connel dd b{width: 100px;display: inline-block;text-align: right;padding: 5px 15px;}
+			.connel dd{*overflow: hidden; *zoom: 1;padding: 5px 10px;border-bottom: 1px solid #ddd;}
+			.connel dd span.time{padding-right: 20px;}
+			.connel dd:after{display: table;content: "";width: 0;clear: both;}
+</style>
+<link rel="stylesheet" type="text/css" href="${mctx}/lib/zdvideo/style.css"/>
+	</head>
+	<body>
+	<@cmMacro.top/>
+	<@cmMacro.navigator channelSort='video'/>
+		<div class="container mg-t20">
+			<div class=" zd-video-container zd-video-ispause" id="videobox">
+				<!--<video width="950" height="500" src="video/i.mp4" controls="controls" autoplay="autoplay">
+					
+				</video>-->
+					<!--<embed src="video/i.mp4" width="950" height="500"  type=audio/x-pn-realaudio-plugin CONSOLE=Clip1 CONTROLS=ImageWindow AUTOSTART=true loop=true></embed>-->
+				<!--  <embed name="PlayerCtrl" width="950" height="500" id="PlayerCtrl"  src="${mctx}/video/m.swf" type="application/x-shockwave-flash" wmode="window" allowfullscreen="true" allowscriptaccess="always" quality="high" bgcolor="#000000">-->
+			</div>
+			<div class="row">
+				<div class="col5">
+					<dl class="connel">
+						<dt>视频资料</dt>
+					</dl>
+				</div>
+				<@sp_video_list siteId="${siteId}" pageIndex="1" pageSize="15">
+				<#if video_list??>
+				<div class="col19" style="min-height:200px">
+					<dl class="connel">
+						<dt>&nbsp;</dt>
+						<#list video_list as v>
+						<dd><a href="javascript:myvideo('${ctx}/${v.ftlPath}')" class="left">${v.ftlName!''} </a><span class="right time">${(v.createDate!'')?string('yyyy-MM-dd HH:mm:ss')}</span></dd>
+						</#list>
+					</dl>
+				</div>
+				</#if>
+				</@sp_video_list>
+			</div>
+		</div>
+<@cmMacro.foot siteId='${siteId}' ostype='${ostype}' index=1 />	
+<script src="${mctx}/lib/zdvideo/zd-video.js"></script>
+<script type="text/javascript">
+	
+	  var video = new ZdVideo({
+	      container: 'videobox',
+	      source: '${mctx}/video/aaaa.mp4',
+	    });
+	  
+	function myvideo(src){
+		$('video','#videobox').attr('src',src);
+	}
+</script>
+	</body>
+

@@ -1,0 +1,53 @@
+
+
+<SCRIPT type="text/javascript">
+
+
+	var menuSelectSetting = {
+			callback: {
+				onClick: clickMenuValue
+			},
+		data : {
+			simpleData : {
+				enable : true,
+				idKey : "id",
+				pIdKey : "pid",
+				rootPId :"null"
+			}
+		}
+	};
+	
+	
+	function clickMenuValue(event, treeId, treeNode) {
+		jQuery("#pname").val(treeNode.name);
+		jQuery("#pid").val(treeNode.id);
+	    $('.close').trigger('click');
+	    
+	};
+	
+	
+
+	$(document).ready(function() {
+		jQuery.post("${ctx}${returnDatas.data}",
+				function(_json) {
+					if (_json.status == "success") {
+						var jsonArr = _json.data;
+						for(var i=0;i<jsonArr.length;i++){
+							delete jsonArr[i]['icon'];
+						}
+						$.fn.zTree.init($("#menuTree"), menuSelectSetting,jsonArr);
+						var zTree =$.fn.zTree.getZTreeObj("menuTree");
+				    	    selectZtreeOneNode(jQuery("#pid").val(),"menuTree");
+					} else {
+						myalert(_json.message);
+					}
+				});
+	});
+</SCRIPT>
+
+
+
+
+<div>
+	<ul id="menuTree" class="ztree"></ul>
+</div>

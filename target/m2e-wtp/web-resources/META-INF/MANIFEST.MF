@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: bishe
+Implementation-Version: 0.0.1-SNAPSHOT
+Implementation-Vendor-Id: com.centfor
+Build-Jdk: 1.7.0_17
+Built-By: Administrator
+Build-Version: 0.0.1-SNAPSHOT-2016-11-06T13:51:51Z
+Created-By: Maven Integration for Eclipse
+Specification-Title: bishe
+Specification-Version: 0.0.1-SNAPSHOT
+

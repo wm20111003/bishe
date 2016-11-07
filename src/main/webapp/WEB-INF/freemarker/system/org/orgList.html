@@ -1,0 +1,200 @@
+
+
+<script type="text/javascript" src="${ctx}/js/system/org/org.js"></script>
+
+
+
+<SCRIPT type="text/javascript">
+<!--
+	var orgTreesetting = {
+		callback: {
+			onClick: orgzTreeOnClick
+		},
+		data : {
+			simpleData : {
+				enable : true,
+				idKey : "id",
+				pIdKey : "pid",
+				rootPId : "null"
+			}
+		}
+	};
+
+	$(document).ready(function() {
+		
+		jQuery.post("${ctx}/system/org/list/json",
+				function(_json) {
+					if (_json.status == "success") {
+						
+						$.fn.zTree.init($("#orgListTree"), orgTreesetting,_json.data);
+						var zTree =$.fn.zTree.getZTreeObj("orgListTree");
+				    	 zTree.expandAll(true);
+				    	
+					} else {
+						myalert(_json.message);
+					}
+				});
+		
+	});
+	
+	function orgzTreeOnClick(event, treeId, treeNode) {
+	    showdata(treeNode);
+	};
+	
+	function showdata(result) {
+		for (var s in result) {
+			set_val(s, result[s]);
+		}
+		var _pid=result["pid"];
+		if((!_pid)||_pid==null||_pid=="null"||_pid==""){
+			jQuery("#pid").val("");
+		}else{
+			jQuery("#pid").val(_pid);
+		}
+		var _pNode= result.getParentNode();
+		if(_pNode){
+			jQuery("#pname").val(_pNode["name"]);
+		}else{
+			jQuery("#pname").val("");
+		}
+		
+		
+	}
+	
+	
+	function deleteOrg(){
+		var id=jQuery("#id").val();
+		if(!id||id==""){
+			myalert("请选择你要删除的记录");
+			return;
+		}else{
+			var _url="${ctx}/system/org/delete?id="+id;
+			var listurl="${ctx}/system/org/list";
+			mydelete(_url,listurl);
+		}
+	}
+	
+	
+	
+	var org_modal=null;
+	function showOrgModal(){
+		if(org_modal!=null){
+			org_modal.show();
+			return;
+		}
+		
+		 org_modal=$.scojs_modal({
+			  title: '选择部门',
+			  remote: "${ctx}/system/org/tree",
+			  uuid:"orgTree",
+			  fun_confirm:"selectParentOrgVal"
+			  
+			});
+		  org_modal.show();
+
+	}
+	function selectParentOrgVal(uuid){
+
+		  var orgCheckBoxTree = $.fn.zTree.getZTreeObj(uuid);
+		  var nodes = orgCheckBoxTree.getCheckedNodes(true);
+		  if(nodes.length<1){
+			  myalert("请选择一个部门!");
+			  return;
+		  }
+		  var orgNames="";
+		  var orgIds="";
+		  jQuery(nodes).each(function(i,_obj){
+			  orgNames+=_obj.name+",";
+			  orgIds+=_obj.id+",";
+		  });
+		  
+		  jQuery("#pname").val(orgNames);
+		  jQuery("#pid").val(orgIds);
+		  org_modal.close();
+		  
+	}
+	
+	
+		
+		
+	
+	
+//-->
+</SCRIPT>
+	<div class="operate panel panel-default" style="height:65px;" >
+		<div class="panel-body">
+			<div class="pull-right">
+				<a onclick="commonSaveForm('updateForm','${ctx}/system/org/list');" class="btn btn-sm btn-primary">添加</a>
+				<a onclick="commonUpdateForm('updateForm','${ctx}/system/org/list');" class="btn btn-sm btn-primary">修改</a>
+				|
+				<a onclick="deleteOrg();" class="btn btn-sm  btn-danger">删除</a>
+			</div>
+		</div>
+	</div>
+	
+	
+	<!-- 功能操作区域结束 -->
+<!-- 列表显示区域  -->
+<div class="row">
+	<div class="col-sm-4 sub_left_menu ">
+		<div class="well">
+			<ul id="orgListTree" class="ztree"></ul>
+		</div>
+	</div>
+	<div class="col-sm-8 sub_content">
+		<form id="updateForm" name="updateForm" method="post" action="${ctx}/system/org/update" class="well form-horizontal clearfix">
+			<input type="hidden" name="id" id="id">
+			<input type="hidden" name="opmode" id="opmode" value="">
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="comcode">编码*：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" id="comcode" name="comcode" >
+				</div>
+			</div>
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="name">名称*：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" id="name" name="name">
+				</div>
+			</div>
+			
+
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="dept_name">上级部门*：</label>
+				<div class="col-sm-8">
+					<div class="input-group">
+						<input name="pname" class="form-control" id="pname" type="text" readonly="readonly"/>
+						<input name="pid" id="pid" type="hidden"/>
+						<div class="input-group-btn">
+												<a data-trigger="modal" href="${ctx}/system/org/tree" data-title="选择部门" class="btn btn-sm btn-primary">
+													<i class="fa fa-search"></i>
+												</a>
+											</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="sortno">排序：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" id="sortno" name="sortno" >
+				</div>
+			</div>
+
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="state">是否可用*：</label>
+				<div class="col-sm-8">
+					<select   name="state" id="state" class="form-control">
+						<option  value="是">是</option>
+						<option value="否">否</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="description" >描述：</label>
+				<div class="col-sm-8" >
+					<textarea class="form-control" name="description" id="description" rows="5" class="col-xs-12" ></textarea>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

@@ -1,0 +1,437 @@
+ <#-- 全局变量 --> <#global ctx="${(ctp.contextPath)!''}"> <#macro head>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta charset="utf-8" />
+<script type="text/javascript">
+	var ctx = "${ctx}";
+</script>
+</#macro> <#macro ace> <@head />
+<!-- 防止 ace js初始化错误  -->
+<input type="hidden" />
+<!--[if !IE]> -->
+<script type="text/javascript">
+	window.jQuery
+			|| document.write("<script src='${ctx}/ace/js/jquery.min.js'>"
+					+ "<"+"/script>");
+</script>
+<!-- <![endif]-->
+<!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='${ctx}/ace/js/jquery1x.min.js'>"+"<"+"/script>");
+</script>
+<![endif]-->
+<!-- bootstrap & fontawesome -->
+<link rel="stylesheet" href="${ctx}/ace/css/bootstrap.min.css" />
+<link rel="stylesheet" href="${ctx}/ace/css/font-awesome.min.css" />
+<!-- page specific plugin styles -->
+<link rel="stylesheet" href="${ctx}/ace/css/chosen.css" />
+<!-- text fonts -->
+<link rel="stylesheet" href="${ctx}/ace/css/ace-fonts.css" />
+<!--[if lte IE 9]>
+			<link rel="stylesheet" href="${ctx}/ace/css/ace-part2.min.css" />
+		<![endif]-->
+<link rel="stylesheet" href="${ctx}/ace/css/ace-skins.min.css" />
+<link rel="stylesheet" href="${ctx}/ace/css/ace-rtl.min.css" />
+<!-- ace styles -->
+<link rel="stylesheet" href="${ctx}/ace/css/ace.min.css" />
+<link rel="stylesheet" href="${ctx}/js/coms/validate/tishi.css" />
+
+<link rel="stylesheet" type="text/css" href="${ctx}/js/pagination/pagination.css"/>
+
+<!--[if lte IE 9]>
+		  <link rel="stylesheet" href="${ctx}/ace/css/ace-ie.min.css" />
+		<![endif]-->
+<!-- basic scripts -->
+<script type="text/javascript">
+	if ('ontouchstart' in document.documentElement)
+		document
+				.write("<script src='${ctx}/ace/js/jquery.mobile.custom.min.js'>"
+						+ "<"+"/script>");
+</script>
+<script src="${ctx}/ace/js/bootstrap.min.js"></script>
+<!-- box 插件 -->
+<script src="${ctx}/ace/js/bootbox.min.js"></script>
+<!-- ace scripts -->
+<script src="${ctx}/ace/js/ace.min.js"></script>
+<script src="${ctx}/ace/js/ace-elements.min.js"></script>
+<!-- inline styles related to this page -->
+<!-- ace settings handler -->
+<script src="${ctx}/ace/js/ace-extra.min.js"></script>
+
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+
+<!--[if lte IE 8]>
+		<script src="${ctx}/ace/js/html5shiv.js"></script>
+		<script src="${ctx}/ace/js/respond.min.js"></script>
+		<![endif]-->
+
+<script src="${ctx}/js/coms/common/messager.js"></script>
+<script src="${ctx}/js/coms/common/ajaxmenu.js"></script>
+<!-- sco.js -->
+<link href="${ctx}/js/coms/sco/css/scojs.css" rel="stylesheet" />
+<script src="${ctx}/js/coms/sco/js/sco.ajax.js"></script>
+<script src="${ctx}/js/coms/sco/js/sco.modal.js"></script>
+
+<script src="${ctx}/js/coms/common/common.js"></script>
+<script type="text/javascript"
+	src="${ctx}/js/coms/validate/Validform_source.js"></script>
+<script type="text/javascript" src="${ctx}/js/coms/validate/tishi.js"></script>
+<!-- layer -->
+
+<script type="text/javascript" src="${ctx}/userstatic/common/lib/handlebars/1.3.0/handlebars.min.js"></script>
+<script type="text/javascript" src="${ctx}/userstatic/common/lib/handlebars/1.3.0/helpers.min.js"></script>
+<script type="text/javascript" src="${ctx}/js/pagination/jquery.pagination.js"></script>
+<script type="text/javascript" src="${ctx}/js/coms/common/common.js"></script>
+<script type="text/javascript" src="${ctx}/js/utils.js"></script>
+</#macro> <#macro aceplugin> <@ace />
+<!-- page specific plugin scripts -->
+
+
+
+
+<link rel="stylesheet" href="${ctx}/ace/css/datepicker.css" />
+<link rel="stylesheet" href="${ctx}/ace/css/bootstrap-timepicker.css" />
+<link rel="stylesheet" href="${ctx}/ace/css/daterangepicker.css" />
+<link rel="stylesheet"
+	href="${ctx}/ace/css/bootstrap-datetimepicker.css" />
+<link rel="stylesheet" href="${ctx}/ace/css/colorpicker.css" />
+
+
+<script src="${ctx}/ace/js/jquery-ui.custom.min.js"></script>
+<script src="${ctx}/ace/js/jquery.ui.touch-punch.min.js"></script>
+<script src="${ctx}/ace/js/chosen.jquery.min.js"></script>
+<script src="${ctx}/ace/js/fuelux/fuelux.spinner.min.js"></script>
+<script src="${ctx}/ace/js/date-time/bootstrap-datepicker.min.js"></script>
+<script src="${ctx}/ace/js/date-time/bootstrap-timepicker.min.js"></script>
+<script src="${ctx}/ace/js/date-time/moment.min.js"></script>
+<script src="${ctx}/ace/js/date-time/daterangepicker.min.js"></script>
+<script src="${ctx}/ace/js/date-time/bootstrap-datetimepicker.min.js"></script>
+<script
+	src="${ctx}/ace/js/date-time/locales/bootstrap-datepicker.zh-CN.js"></script>
+<script src="${ctx}/ace/js/bootstrap-colorpicker.min.js"></script>
+<script src="${ctx}/ace/js/jquery.knob.min.js"></script>
+<script src="${ctx}/ace/js/jquery.autosize.min.js"></script>
+<script src="${ctx}/ace/js/jquery.inputlimiter.1.3.1.min.js"></script>
+<script src="${ctx}/ace/js/jquery.maskedinput.min.js"></script>
+<script src="${ctx}/ace/js/jquery.validate.min.js"></script>
+<script src="${ctx}/js/coms/common/jquery.checkbox.js"></script>
+<script src="${ctx}/ace/js/bootstrap-tag.min.js"></script>
+
+
+
+<link rel="stylesheet"
+	href="${ctx}/js/coms/ztree/css/zTreeStyle/zTreeStyle.css"
+	type="text/css">
+<link rel="stylesheet" href="${ctx}/js/coms/layer/skin/layer.css" type="text/css">
+<script type="text/javascript"
+	src="${ctx}/js/coms/ztree/js/jquery.ztree.all-3.5.js"></script>
+
+<!--[if lte IE 8]>
+		  <script src="${ctx}/ace/js/excanvas.min.js"></script>
+		<![endif]-->
+<script src="${ctx}/ace/js/jquery-ui.custom.min.js"></script>
+<script src="${ctx}/ace/js/jquery.ui.touch-punch.min.js"></script>
+<script src="${ctx}/ace/js/jquery.easypiechart.min.js"></script>
+<script src="${ctx}/ace/js/jquery.sparkline.min.js"></script>
+<script src="${ctx}/ace/js/flot/jquery.flot.min.js"></script>
+<script src="${ctx}/ace/js/flot/jquery.flot.pie.min.js"></script>
+<script src="${ctx}/ace/js/flot/jquery.flot.resize.min.js"></script>
+
+<script src="${ctx}/js/coms/common/list.js"></script>
+<script src="${ctx}/js/coms/common/pagetoolbar.js"></script>
+<script src="${ctx}/js/coms/layer-v2.2/layer.js"></script>
+<script>
+layer.config({
+    extend: 'extend/layer.ext.js'
+});
+</script>
+</#macro>
+ <#macro navbar>
+<!-- #section:basics/navbar.layout -->
+<div id="navbar" class="navbar navbar-default">
+	<script type="text/javascript">
+		try {
+			ace.settings.check('navbar', 'fixed')
+		} catch (e) {
+		}
+	</script>
+
+	<div class="navbar-container" id="navbar-container">
+		<!-- #section:basics/sidebar.mobile.toggle -->
+		<button type="button" class="navbar-toggle menu-toggler pull-left"
+			id="menu-toggler">
+			<span class="sr-only">Toggle sidebar</span> <span class="icon-bar"></span>
+
+			<span class="icon-bar"></span> <span class="icon-bar"></span>
+		</button>
+
+		<!-- /section:basics/sidebar.mobile.toggle -->
+		<div class="navbar-header pull-left">
+			<!-- #section:basics/navbar.layout.brand -->
+			<a href="javascript:void(0);" class="navbar-brand"> <small>
+					<i class="fa fa-leaf"></i> 毕业设计
+			</small>
+			</a>
+
+			<!-- /section:basics/navbar.layout.brand -->
+
+			<!-- #section:basics/navbar.toggle -->
+
+			<!-- /section:basics/navbar.toggle -->
+		</div>
+
+		<!-- #section:basics/navbar.dropdown -->
+		<div class="navbar-buttons navbar-header pull-right" role="navigation">
+			<ul class="nav ace-nav">
+				<!-- #section:basics/navbar.user_menu -->
+				<li class="light-blue"><a data-toggle="dropdown"
+					href="javascript:void(0);" class="dropdown-toggle"> <img
+						class="nav-user-photo" src="${ctx}/ace/avatars/user.jpg"
+						alt="Jason's Photo" /> <span class="user-info"> <small>欢迎,</small>
+							<@shiro.principal property="name" />
+					</span> <i class="ace-icon fa fa-caret-down"></i>
+				</a>
+
+					<ul
+						class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+						
+						<!-- lyf 修改-->						
+						<li><a onclick="showDG('${ctx}/system/update/pre');"> 
+						<i class="ace-icon fa fa-user"></i> 修改密码
+						</a></li>
+
+						<li class="divider"></li>
+
+						<li><a href="${ctx}/system/logout"> <i
+								class="ace-icon fa fa-power-off"></i> 退出
+						</a></li>
+					</ul></li>
+
+				<!-- /section:basics/navbar.user_menu -->
+			</ul>
+		</div>
+<script type="text/javascript">
+
+//lyf 添加
+var changePwd;
+//修改密码弹窗
+function showDG(url){
+	changePwd = layer.open({
+        type: 2,
+        //skin: 'layui-layer-lan',
+        title: '修改密码',
+        fix: false,
+        shadeClose: true,
+        maxmin: true,
+        area: ['500px', '400px'],
+        content: url,
+        end: function(){
+        }
+    });
+}
+</script>
+		<!-- /section:basics/navbar.dropdown -->
+	</div>
+	<!-- /.navbar-container -->
+</div>
+<!-- /section:basics/navbar.layout -->
+</#macro>
+ <#macro sidebar>
+
+<script type="text/javascript">
+	try {
+		ace.settings.check('main-container', 'fixed')
+	} catch (e) {
+	}
+</script>
+
+<!-- #section:basics/sidebar -->
+<div id="sidebar" class="sidebar                  responsive">
+	<script type="text/javascript">
+		try {
+			ace.settings.check('sidebar', 'fixed')
+		} catch (e) {
+		}
+	</script>
+	<!-- /.sidebar-shortcuts -->
+
+	<ul class="nav nav-list" id="module">
+
+	</ul>
+	<!-- /.nav-list -->
+
+	<!-- #section:basics/sidebar.layout.minimize -->
+	<div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+		<i class="ace-icon fa fa-angle-double-left"
+			data-icon1="ace-icon fa fa-angle-double-left"
+			data-icon2="ace-icon fa fa-angle-double-right"></i>
+	</div>
+
+	<!-- /section:basics/sidebar.layout.minimize -->
+	<script type="text/javascript">
+		try {
+			ace.settings.check('sidebar', 'collapsed')
+		} catch (e) {
+		}
+	</script>
+</div>
+<!-- /section:basics/sidebar -->
+
+</#macro>
+<#macro acesettings>
+
+<!-- #section:settings.box -->
+<div class="ace-settings-container" id="ace-settings-container">
+	<div class="btn btn-app btn-xs btn-warning ace-settings-btn"
+		id="ace-settings-btn">
+		<i class="ace-icon fa fa-cog bigger-150"></i>
+	</div>
+
+	<div class="ace-settings-box clearfix" id="ace-settings-box">
+		<div class="pull-left width-50">
+			<!-- #section:settings.skins -->
+			<div class="ace-settings-item">
+				<div class="pull-left">
+					<select id="skin-colorpicker" class="hide">
+						<option data-skin="no-skin" value="#438EB9">#438EB9</option>
+						<option data-skin="skin-1" value="#222A2D">#222A2D</option>
+						<option data-skin="skin-2" value="#C6487E">#C6487E</option>
+						<option data-skin="skin-3" value="#D0D0D0">#D0D0D0</option>
+					</select>
+				</div>
+				<span>&nbsp; Choose Skin</span>
+			</div>
+
+			<!-- /section:settings.skins -->
+
+			<!-- #section:settings.navbar -->
+			<div class="ace-settings-item">
+				<input type="checkbox" class="ace ace-checkbox-2"
+					id="ace-settings-navbar" /> <label class="lbl"
+					for="ace-settings-navbar"> Fixed Navbar</label>
+			</div>
+
+			<!-- /section:settings.navbar -->
+
+			<!-- #section:settings.sidebar -->
+			<div class="ace-settings-item">
+				<input type="checkbox" class="ace ace-checkbox-2"
+					id="ace-settings-sidebar" /> <label class="lbl"
+					for="ace-settings-sidebar"> Fixed Sidebar</label>
+			</div>
+
+			<!-- /section:settings.sidebar -->
+
+			<!-- #section:settings.breadcrumbs -->
+			<div class="ace-settings-item">
+				<input type="checkbox" class="ace ace-checkbox-2"
+					id="ace-settings-breadcrumbs" /> <label class="lbl"
+					for="ace-settings-breadcrumbs"> Fixed Breadcrumbs</label>
+			</div>
+
+			<!-- /section:settings.breadcrumbs -->
+
+			<!-- #section:settings.rtl -->
+			<div class="ace-settings-item">
+				<input type="checkbox" class="ace ace-checkbox-2"
+					id="ace-settings-rtl" /> <label class="lbl" for="ace-settings-rtl">
+					Right To Left (rtl)</label>
+			</div>
+
+			<!-- /section:settings.rtl -->
+
+			<!-- #section:settings.container -->
+			<div class="ace-settings-item">
+				<input type="checkbox" class="ace ace-checkbox-2"
+					id="ace-settings-add-container" /> <label class="lbl"
+					for="ace-settings-add-container"> Inside <b>.container</b>
+				</label>
+			</div>
+
+			<!-- /section:settings.container -->
+		</div>
+		<!-- /.pull-left -->
+
+		<div class="pull-left width-50">
+			<!-- #section:basics/sidebar.options -->
+			<div class="ace-settings-item">
+				<input type="checkbox" class="ace ace-checkbox-2"
+					id="ace-settings-hover" /> <label class="lbl"
+					for="ace-settings-hover"> Submenu on Hover</label>
+			</div>
+
+			<div class="ace-settings-item">
+				<input type="checkbox" class="ace ace-checkbox-2"
+					id="ace-settings-compact" /> <label class="lbl"
+					for="ace-settings-compact"> Compact Sidebar</label>
+			</div>
+
+			<div class="ace-settings-item">
+				<input type="checkbox" class="ace ace-checkbox-2"
+					id="ace-settings-highlight" /> <label class="lbl"
+					for="ace-settings-highlight"> Alt. Active Item</label>
+			</div>
+
+			<!-- /section:basics/sidebar.options -->
+		</div>
+		<!-- /.pull-left -->
+	</div>
+	<!-- /.ace-settings-box -->
+</div>
+<!-- /.ace-settings-container -->
+</#macro> <#macro pagetoolbar page,formId> <#if (page.pageIndex >=
+page.pageCount) && (page.pageCount != 0)> <#assign index =
+page.pageCount /> <#else> <#assign index = page.pageIndex /> </#if>
+<div class="row">
+	<div class="col-xs-12 pagination pull-left">
+		<div class="dataTables_paginate paging_bootstrap">
+			<ul class="pagination pull-left">
+				<#if page.firstPage>
+				<li class="prev"><a href="javascript:startPage('${formId}');"><i
+						class="fa fa-angle-double-left"></i></a></li> <#else>
+				<li class="prev disabled"><a href="javascript:void(0);"><i
+						class="fa fa-angle-double-left"></i></a></li> </#if> <#assign _start=1 />
+				<#if (index>3)> <#assign _start=index-2 /> </#if> <#assign _end=1 />
+				<#if (page.pageCount-index>=2)> <#assign _end=index+2 /> <#else>
+				<#assign _end=page.pageCount /> </#if> <#if (_end<1)> <#assign
+				_end=1 /> </#if> <#list _start.._end as t> <#if t==index>
+				<li class="active"><a href="javascript:void(0);">${t}</a></li>
+				<#else>
+				<li><a href="javascript:toPage('${formId}','${t}');">${t}</a></li>
+				</#if> </#list> <#if page.lastPage>
+				<li class="next"><a
+					href="javascript:endPage('${formId}','${page.pageCount}');"><i
+						class="fa fa-angle-double-right"></i></a></li> <#else>
+				<li class="next disabled"><a href="javascript:void(0);"><i
+						class="fa fa-angle-double-right"></i></a></li> </#if>
+				<li class="disabled"><a href="javascript:void(0);">共${page.pageCount}页${page.totalCount}条</a></li>
+			</ul>
+		</div>
+	</div>
+
+</div>
+
+</#macro> <#macro footer>
+
+<div class="footer">
+	<div class="footer-inner">
+		<!-- #section:basics/footer -->
+		<div class="footer-content">
+			<span class="bigger-120"> <span class="blue bolder">毕设</span>
+				@2015
+			</span> &nbsp; &nbsp;
+
+		</div>
+
+		<!-- /section:basics/footer -->
+	</div>
+</div>
+
+<a href="javascript:void(0);" id="btn-scroll-up"
+	class="btn-scroll-up btn btn-sm btn-inverse"> <i
+	class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+</a> </#macro>

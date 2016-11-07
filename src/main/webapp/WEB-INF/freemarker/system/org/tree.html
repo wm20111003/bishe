@@ -1,0 +1,64 @@
+
+
+<SCRIPT type="text/javascript">
+<!--
+
+
+	var orgSelectSetting = {
+			callback: {
+				onClick: clickOrgValue
+			},
+		data : {
+			simpleData : {
+				enable : true,
+				idKey : "id",
+				pIdKey : "pid",
+				rootPId : "null",
+			}
+		}
+	};
+	
+	
+	function clickOrgValue(event, treeId, treeNode) {
+		jQuery("#pname").val(treeNode.name);
+		jQuery("#pid").val(treeNode.id);
+	    
+	    
+	};
+	
+	
+
+	$(document).ready(function() {
+		jQuery.post("${ctx}/system/org/list/json",
+				function(_json) {
+					if (_json.status == "success") {
+						$.fn.zTree.init($("#orgTree"), orgSelectSetting,_json.data);
+						
+						var zTree =$.fn.zTree.getZTreeObj("orgTree");
+				    	 zTree.expandAll(true);
+				    	 selectZtreeOneNode(jQuery("#pid").val(),"orgTree");
+				    	 
+						
+					} else {
+						myalert(_json.message);
+					}
+				});
+	});
+	
+	
+
+	
+	
+	
+	
+	
+	
+//-->
+</SCRIPT>
+
+
+
+
+<div>
+	<ul id="orgTree" class="ztree"></ul>
+</div>

@@ -1,0 +1,115 @@
+<!-- 自定义字段 -->
+<#macro selfColumn>  
+    <div style="display: none;">
+    <div id="div_dg" >
+        <form method="post" id="form_dg">
+        <input type="hidden"  id="propertyId"  name="propertyId" />
+        <input type="hidden"  id="propertyModelType"  name="modelType" />
+	     <table class="table table-bordered">
+			<tr>
+				<th><nobr>字段名称</nobr></th>
+				<td><input type="text" class="form-control" name="name" id="name"></td>	
+				
+				<th><nobr>字段代码*</nobr></th>
+				<td><input type="text" class="form-control" name="code" id="code" style="color: gray;"></td> 
+		    </tr>
+		    
+		    <tr>
+				<th><nobr>字段类型*</nobr></th>
+				<td>
+				<select id="inputType" name="inputType">
+				    <option value="text">文本</option>
+				    <option value="textArea">文本域</option>
+				    <option value="select">拉下列表</option>
+				    <option value="checkbox">复选框</option>
+				    <option value="radio">单选按钮</option>
+				    <option value="date">日期</option>
+				</select>
+				</td>	
+				
+				<th><nobr>字段样式</nobr></th>
+				<td><input type="text" class="form-control" name="style" id="style"></td>
+		    </tr>
+		    
+		    <tr>
+				<th><nobr>可选值*</nobr></th>
+				<td>
+                    <input type="text" class="form-control" name="selectValues" id="selectValues" placeholder="多个用逗号隔开">
+				</td>	
+				
+				<th><nobr>默认值</nobr></th>
+				<td><input type="text" class="form-control" name="defaultValue" id="defaultValue"></td>
+		    </tr>
+		    
+		    <tr>						
+		    	
+		    	<th><nobr>值</nobr></th>
+				<td><input type="text" class="form-control" name="pvalue" id="pvalue" ></td>
+				
+				<th><nobr>排序(数字最大排序越靠前)</nobr></th>
+				<td><input type="text" class="form-control" name="sort" id="sort" value="1" ></td>   
+		        
+		    </tr>
+		    
+		    <tr>			
+				<th><nobr>是否显示</nobr></th>
+				<td><input type="radio" name="state" value="1" checked="checked"/>是 &nbsp;&nbsp;&nbsp;&nbsp;
+				    <input type="radio" name="state" value="0" />否
+				    </td>
+				    
+				<th><nobr>是否允许被继承</nobr></th>
+				<td><input type="radio" name="isextend" value="1" checked="checked"/>是 &nbsp;&nbsp;&nbsp;&nbsp;
+				    <input type="radio" name="isextend" value="0" />否
+				</td>
+				
+		    </tr>
+		    
+				
+	     </table>
+	     </form>
+     </div>
+     </div>
+</#macro>
+
+
+<#macro table_parent>
+     <p>父节点属性</p>
+	 <table class="table table-bordered" id="tab_parent">
+             <thead>
+	             <tr>
+	                <th>字段名称</th>
+	                <th>字段值</th>
+	                <th>操作</th>
+	             </tr>
+             </thead> 
+             <tbody>
+             </tbody>
+       </table>
+</#macro>
+
+
+<#macro newButton>
+    <a class="btn btn-sm btn-primary"  onclick="showSelDg();" style="width:130px; height: 35px; display: block; position: relative;" href="javascript:void(0);">
+	           <i class="ace-icon glyphicon glyphicon-plus">新增自定义字段</i>
+</#macro>
+
+<#macro table_property>
+     <p>本节点属性</p>
+	 <table class="table table-bordered" id="tab_property">
+             <thead>
+	             <tr>
+	                <th>字段名称</th>
+	                <th>字段值</th>
+	                <th>操作</th>
+	             </tr>
+             </thead> 
+             <tbody>
+             </tbody>
+       </table>
+</#macro>
+
+<#macro showSelColumn>
+	    <tr class="moreconfig"><td colspan="2"><@newButton/></td></tr>
+		<tr class="moreconfig"><td colspan="2"><@table_parent/></td></tr> 
+		<tr class="moreconfig"><td colspan="2"><@table_property/></td></tr> 
+</#macro>

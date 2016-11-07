@@ -1,0 +1,67 @@
+<#import "/userpage/common/common.html" as cmMacro />  
+<#assign mctx='${ctx}/userstatic/common'/>
+ <@cmMacro.head title='档案记录'/>
+		<style type="text/css">
+			.connel dd b{width: 100px;display: inline-block;text-align: right;padding: 5px 20px 5px 10px;}
+			.nodata .tips{color:#999;}
+			.nodata .tips a{text-decoration: underline;}
+			.nodata .tips a:hover{color:#555;}
+		</style>
+	<body>
+		<@cmMacro.top/>
+		<@cmMacro.navigator channelSort='record'/>
+			
+		<div class="container mg-t20">
+			<div class="row" style="min-height:420px;">
+				<div class="col3">
+					<dl class="connel">
+						<dt>档案信息</dt>
+						<dd><a href="http://www.chsi.com.cn/">学信网</a></dd>
+					</dl>
+				</div>
+				<@sp_member_bean>
+				<div class="col21">
+					<dl class="connel">
+						<dt>&nbsp;</dt>
+					</dl>
+					<#if tag_bean??>
+						<table class="archives-info-tabs">
+							<caption>${tag_bean.education!''}-${tag_bean.schoolName!''}</caption>
+							<tr>
+								<td class="title">姓名</td><td colspan="3" class="tabtd">${tag_bean.name!''}</td>
+								<td rowspan="8" style="vertical-align: top;text-align: center;"><div><img src="${ctx}/${tag_bean.headimgsrc!''}"/><p class="img-disc">毕业照片</p></div></td>
+							</tr>
+							<tr>
+								<td class="title">性别</td><td class="tabtd">${tag_bean.sex!''}</td><td class="title">民族</td><td class="tabtd">${tag_bean.national!''}</td>
+							</tr>
+							<tr>
+								<td class="title">出生日期</td><td class="tabtd">${tag_bean.birthday!''}</td><td class="title">身份证号</td><td class="tabtd">${tag_bean.cardId!'未登记'}</td>
+							</tr>
+							<tr>
+								<td class="title">考生号</td><td class="tabtd">${tag_bean.testId!''}</td><td class="title">学号</td><td class="tabtd">${tag_bean.studentId!''}</td>
+							</tr>
+							<tr>
+								<td class="title">系(所、函授站)</td><td class="tabtd">${tag_bean.level!''}</td><td class="title">专业名称</td><td class="tabtd">${tag_bean.majorName!''}</td>
+							</tr>
+							<tr>
+								<td class="title">班级</td><td class="tabtd">${tag_bean.gradeId!''}</td><td class="title">学历</td><td class="tabtd">${tag_bean.education!''}</td>
+							</tr>
+							<tr>
+								<td class="title">院校名称</td><td class="tabtd">${tag_bean.schoolName!''}</td><td class="title">入学日期</td><td class="tabtd">${tag_bean.startDate!''}</td>
+							</tr>
+							<tr>
+								<td class="title">学制</td><td colspan="3" class="tabtd">${tag_bean.length!''}</td>
+							</tr>
+						</table>
+					<#else>
+							<div class="nodata">
+								<img src="${mctx}/images/nodata.png"/>
+								<p class="tips">如果未登录,请您先<a href="${ctx}/front/commonDirect?mark=login&siteId=${siteId}&ostype=${ostype}">登录</a></p>
+							</div>
+					</#if>
+				</div>
+				</@sp_member_bean>
+			</div>
+		</div>
+<@cmMacro.foot siteId='${siteId}' ostype='${ostype}' index=1 />	
+	</body>

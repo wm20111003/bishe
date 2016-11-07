@@ -1,0 +1,90 @@
+<#import "/userpage/common/common.html" as cmMacro />  
+<#assign mctx='${ctx}/userstatic/common' />
+<#import "/common/tag.html" as tag />
+ <@cmMacro.head title='用户登录'/>
+ <script type="text/javascript" src="${mctx}/js/Validform_v5.3.2_min.js"></script>
+		<style type="text/css">
+			.lg-tab{margin: 100px auto 80px;}
+			.lg-tab tr td{line-height: 50px;padding: 5px 0 5px 20px;color:#555;}
+			.lg-tab tr td.title{font-family: "Microsoft YaHei"}
+			.lg-tab tr td input{height: 30px;width: 200px;padding:5px 10px;border:1px solid #ddd;}
+			a.reg{text-decoration: underline;color: purple;}
+			.lg-tab tr td button.btn{background: #E03437;padding: 6px 20px;color: #FFFFFF;outline: none;}
+			.tx-right{text-align: right;}
+			.login-bg{background:url(${mctx}/images/login-bg.jpg) no-repeat;background-size:100%;}
+			.btn-primary, .btn-primary:focus{background-color: #428bca !important;border-color: #428bca;}
+			.btn{display: inline-block;color: #FFF !important;text-shadow: 0 -1px 0 rgba(0,0,0,0.25) !important;
+    background-image: none !important;border: 5px solid #FFF;border-radius: 0;box-shadow: none !important;
+    -webkit-transition: all ease .15s;transition: all ease .15s;cursor: pointer;
+    vertical-align: middle;
+    margin: 0;
+    position: relative;}
+    .btn-sm {
+    border-width: 4px;
+    font-size: 13px;
+    padding: 4px 9px;
+    line-height: 1.39;
+}
+.btn-primary:hover, .btn-primary:active, .open .btn-primary.dropdown-toggle {
+    background-color: #1b6aaa !important;
+    border-color: #428bca;
+}
+.btn-primary, .btn-primary:focus {
+    background-color: #428bca !important;
+    border-color: #428bca;
+}
+		</style>
+	<body>
+		<div class="navigator-top-bg">
+			<div class="container">
+				<img src="${mctx}/images/logo_head.png" width="100%"/>
+			</div>
+		</div>
+		<div class="container mg-t30 ">
+			<div class="row">
+				<div class="col16 login-bg" style="min-height:420px">
+					
+				</div>
+				<div class="col8" style="min-height:420px">
+					<form action="" method="post" id="logForm">
+						<table border="0" cellspacing="0" cellpadding="0" class="lg-tab">
+							<tr><td class="tx-right title">用户名</td><td><input type="text" name="account" placeholder="请输入用户名"	 id="username" datatype="s2-18"/></td></tr>
+							<tr><td class="tx-right title">密码</td><td><input type="password" name="password" placeholder="请输入密码" id="userpwd" datatype="s4-18"/></td></tr>
+							<tr><td class="center" colspan="2">
+								<button type="button" class="width-35 pull-right btn btn-sm btn-primary" onclick="login()">
+									<i class="icon-key"></i> 登陆</button>
+								<small>还没有账号?15秒快速<a href="<@tag.findChannelBySort 'register'/>" class="reg">注册</a></small>
+							</tr>
+						</table>
+					</form>
+				</div>
+			</div>
+		</div>
+		<@cmMacro.foot siteId='${siteId}' ostype='${ostype}' index=1 />	
+<script type="text/javascript">
+var demo=$("#logForm").Validform();
+function login(){
+	if(!(demo.check())){
+		$.Showmsg("请正确填写信息");
+		return false;
+	}
+	$.ajax({
+		url:'${ctx}/front/member/login',
+		data:$('#logForm').serialize(),
+		type:'post',
+		dataType:'json',
+		success:function(_data){
+			if(_data.status == 'success'){
+				 layer.alert('登录成功!',{},function(index){
+         			window.location.href="${ctx}/front/commonDirect?mark=shouye&siteId=${siteId}&ostype=${ostype}"
+         				layer.close(index)
+         	 	});
+			}else{
+			 layer.alert(_data.message);
+			}
+		}
+	})
+}
+</script>
+	</body>
+</html>

@@ -1,0 +1,45 @@
+<#import "/userpage/${userAccount}/${siteId}/common/common.html" as cmMacro />  
+<#assign mctx='${ctx}/userstatic/common' />
+ <@cmMacro.head title='趣味实验'/>
+		<style type="text/css">
+			body{background: url(${mctx}/images/bg2.jpg) no-repeat;}
+			.connel dd b{width: 100px;display: inline-block;text-align: right;padding: 5px 15px;}
+			.connel dd{*overflow: hidden; *zoom: 1;padding: 5px 10px;border-bottom: 1px solid #ddd;}
+			.connel dd span.time{padding-right: 20px;}
+			.connel dd:after{display: table;content: "";width: 0;clear: both;}
+		</style>
+	</head>
+	<body>
+		<@cmMacro.top/>
+		<@cmMacro.navigator channelSort='hobbies'/>
+			
+		<div class="container mg-t20">
+			<div class="row">
+				<div class="col5">
+					<dl class="connel">
+						<dt>趣味实验</dt>
+					</dl>
+					<!-- <object name="myElement" width="100%" height="150" tabindex="0" id="myElement" class="mg-t20" data="video/m.swf" type="application/x-shockwave-flash" bgcolor="#000000">
+						<param name="allowfullscreen" value="true">
+						<param name="allowscriptaccess" value="always">
+						<param name="seamlesstabbing" value="true">
+						<param name="wmode" value="opaque">
+					</object> -->
+				</div>
+				<@sp_experiment_list siteId="${siteId}" pageIndex='1' pageSize='15'>
+				<#if experiment_list??>
+				<div class="col19" style="min-height:400px">
+					<dl class="connel">
+						<dt>&nbsp;</dt>
+						<#list experiment_list as e>
+						<dd><a href="${ctx}/${e.ftlPath!''}" class="left">${e.ftlName!''} </a><span class="right">主教:${e.author!''}</span><span class="right time">${(e.createDate!'')?string('yyyy-MM-dd HH:mm:ss')}</span></dd>
+						</#list>
+					</dl>
+				</div>
+				</#if>
+				</@sp_experiment_list>
+			</div>
+		</div>
+<@cmMacro.foot siteId='${siteId}' ostype='${ostype}' index=1 />	
+	</body>
+

@@ -1,0 +1,115 @@
+<#escape x as x?html>
+ <@h.ace />
+		<title>登陆界面</title>
+
+		<meta name="description" content="centfor登陆" />
+        
+       
+        <script type="text/javascript">
+    function reloadValidateCode() {
+        document.getElementById("captchaImg").src="${ctx}/getCaptcha?date =" + new Date().getTime();
+        //$("#captchaImg").attr("src","${ctx}/getCaptcha?date = " + new Date() + Math.floor(Math.random()*24));
+    }
+</script>
+	</head>
+
+	<body class="login-layout">
+		<div class="main-container">
+			<div class="main-content">
+				<div class="row">
+					<div class="col-sm-10 col-sm-offset-1">
+						<div class="login-container">
+							<div class="center">
+								<h1>
+									<i class="icon-leaf green"></i>
+									<span class="red">郑州市学生资助管理中心</span>
+								</h1>
+								<h4 class="blue">&copy;<a href="http://www.centfor.com"  target="_blank"> 国家助学金电子签收管理系统</a></h4>
+							</div>
+
+							<div class="space-6"></div>
+
+							<div class="position-relative">
+								<div id="login-box" class="login-box visible widget-box no-border">
+									<div class="widget-body">
+										<div class="widget-main">
+											<h4 class="header blue lighter bigger">
+												<i class="icon-coffee green"></i>
+												${message!'请输入登陆信息'}
+											</h4>
+
+											<div class="space-6"></div>
+
+											<form action="login" method="post"  id="loginForm" name="loginForm" >
+												<fieldset>
+													<label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="text" class="form-control" name="account" value="admin" placeholder="账号" />
+															<i class="icon-user"></i>
+														</span>
+													</label>
+
+													<label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="password" class="form-control" name="password"  value="admin"  placeholder="密码" />
+															<i class="icon-lock"></i>
+														</span>
+													</label>
+													<label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="text" class="form-control" name="captcha"   placeholder="验证码不区分大小写" />
+															<i class="icon-user"></i>
+														</span>
+													</label>
+													<label class="block clearfix">
+													   <img id="captchaImg" src="${ctx}/getCaptcha" width="50px" height="20px" style="border: 1px solid #898989; width: 55px; height: 25px; vertical-align: middle;"  /> 
+													   <input type="hidden" id="ValidateCodeNum" value="" /> 
+													   <span class="refresh">
+													   <a style="cursor: pointer" href="javascript:reloadValidateCode();">刷新</a>
+													   </span>
+													</label>	
+													
+													<div class="space"></div>
+
+													<div class="clearfix">
+														<label class="inline">
+															<input type="checkbox" class="ace" name="rememberme"  value="true"   />
+															<span class="lbl"> 记住我</span>
+														</label>
+
+														<button type="submit" class="width-35 pull-right btn btn-sm btn-primary">
+															<i class="icon-key"></i>
+															登陆
+														</button>
+													</div>
+
+													<div class="space-4"></div>
+												</fieldset>
+											</form>
+
+											
+										</div><!-- /widget-main -->
+
+									</div><!-- /widget-body -->
+								</div><!-- /login-box -->
+
+
+							</div><!-- /position-relative -->
+						</div>
+					</div><!-- /.col -->
+				</div><!-- /.row -->
+			</div>
+		</div><!-- /.main-container -->
+
+
+		<!-- inline scripts related to this page -->
+
+		<script type="text/javascript">
+			function show_box(id) {
+			 jQuery('.widget-box.visible').removeClass('visible');
+			 jQuery('#'+id).addClass('visible');
+			}
+		</script>
+	</body>
+</html>
+</#escape>

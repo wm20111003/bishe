@@ -1,0 +1,266 @@
+<#escape x as x?html>
+<#import "/userpage/common/common.html" as cmMacro />
+<style type="text/css">
+	.dialogTemp{display:none;margin:20px 15px;}
+	.memberList{list-style:none;}
+	.memberList li{line-heihgt:30px;border-bottom:1px solid #ddd;}
+	.memberList li label{cursor: pointer;}
+	.action-other div{display:inline-block;}
+	.courseTable{width:380px;border-collapse: collapse;}
+	.courseTable td,.courseTable th{border:1px solid #ddd;text-align:center;}
+	
+</style>  
+<SCRIPT type="text/javascript">
+jQuery(document).ready(function(){
+	//回选 下拉框
+	//jQuery("#search_state option[value='是']").prop("selected",true);
+	
+
+	$('.date-picker').datepicker({
+		    autoclose: true,
+		    format: 'yyyy-mm-dd',
+		    language: 'zh-CN'
+		    //,todayBtn: 'linked',
+		    //startDate:new Date(2014,10,27),
+			//endDate:'+60d',
+		    //startDate: '+1d',
+		}).next().on(ace.click_event, function(){
+			$(this).prev().focus();
+		});
+	
+	});
+	//人员查询
+	function memberDialog(){
+		var index=layer.open({
+		    type: 1,
+		    content:$('#dialogTemp'),
+		    shade: [0.5, '#000'],
+		    title: ['人员查询'],
+		    area: ['auto','380px'],
+		    shift: 4,
+		    success: function(obj,index){
+		    	$('#sureBtn',obj).off('click').on('click',function(){
+		    		var checkedObj = $('input[type=radio]:checked',obj);
+		    		if(checkedObj.length < 1){
+		    			layer.alert("请先选择一项!");	
+		    		}else{
+		    			$('#memberName').val(checkedObj.data('name'));
+		    			$('#userId').val(checkedObj.val());
+		    			layer.close(index);
+		    		}
+		    	});
+		    }
+		});
+		_loadData(G_paramsMember);
+		return index;
+	}
+	//课程查询
+	function courseDialog(){
+		var index=layer.open({
+		    type: 1,
+		    content:$('#dialogTemp'),
+		    shade: [0.5, '#000'],
+		    title: ['课程查询'],
+		    area: ['auto','380px'],
+		    shift: 3,
+		    success: function(obj,index){
+		    	$('#sureBtn',obj).off('click').on('click',function(){
+		    	var checkedObj = $('input[type=radio]:checked',obj);
+	    		if(checkedObj.length < 1){
+	    			layer.alert("请先选择一项!");	
+	    		}else{
+	    			$('#courseName').val(checkedObj.data('name'));
+	    			$('#courseNameId').val(checkedObj.val());
+	    			layer.close(index);
+	    		}
+		    	});
+		    }
+		});
+		_loadData(G_paramsCourse);
+		return index;
+	}
+	var G_paramsMember = {
+			url :"${ctx}/front/spmember/list/json",
+			items_per_page : 5,//pageSize每页显示的条数
+			page_index : 1 ,   //pageIndex传入后台参数
+			pagination : "Pagination" ,//分页页脚容器
+			searchformId :"",	//form表单id
+			tabletpl : "T_tabletpl", //handlebars模板容器id
+			tablewrap : "J_tabletpl",//容器id
+			pageCallback : function (){
+				//分页回调函数
+			}
+	}
+	var G_paramsCourse = {
+			url :"${ctx}/front/workcoursename/list/json",
+			items_per_page : 5,//pageSize每页显示的条数
+			page_index : 1 ,   //pageIndex传入后台参数
+			pagination : "Pagination" ,//分页页脚容器
+			searchformId :"",	//form表单id
+			tabletpl : "T_tabletplCourse", //handlebars模板容器id
+			tablewrap : "J_tabletpl",//容器id
+			pageCallback : function (){
+				//分页回调函数
+			}
+	}
+	//加载人员数据
+	function _loadData(G_params){
+		Util.pagination(G_params.page_index, true , G_params , "");
+	}
+</SCRIPT>
+
+<div id="dialogTemp" class="dialogTemp">
+	<div id="J_tabletpl"></div>
+	<@cmMacro.pagination/>
+	<div style="text-align:right">
+		<button type="button" class="btn  btn-sm  btn-primary" id="sureBtn">确定</button>
+	</div>
+</div>
+<script type="text/x-handlebars-template" id="T_tabletpl">
+{{#if data}}
+	<table class="courseTable">
+		<tr><th></th><th>学员</th><th>操作</th></tr>
+		{{#each data}}
+		<tr>
+			<td>
+				<input type="radio" id="{{id}}" value="{{id}}" name="member" data-name="{{name}}"/>
+			</td>
+			<td>
+				{{name}}
+			</td>
+			<td><a href="###"><label for="{{id}}">选择</label></a></td>
+		</tr>
+		{{/each}}
+	</table>
+{{/if}}
+</script>
+<script type="text/x-handlebars-template" id="T_tabletplCourse">
+{{#if data}}
+	<table class="courseTable">
+		<tr><th></th><th>课程</th><th>修习类型</th><th>操作</th></tr>
+		{{#each data}}
+		<tr>
+			<td>
+				<input type="radio" id="{{id}}" value="{{id}}" name="course" data-name="{{courseName}}"/>
+			</td>
+			<td>
+				{{courseName}}
+			</td>
+			<td>{{learnType courseType}}</td>
+			<td><a href="###"><label for="{{id}}">选择</label></a></td>
+		</tr>
+		{{/each}}
+	</table>
+{{/if}}
+</script>
+<div class="row">
+	<div class="col-xs-12">
+		<form class="form-horizontal" id="validation-form" method="POST" novalidate="novalidate" action="${ctx}/front/workmark/update" > 
+			<input type="hidden" id="id" name="id" value="${(returnDatas.data.id)!''}"/>	
+<!--input  hidden  End-->
+			
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="pid">用户：</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="input-group" style="width:50%">
+						<input name="memberName" class="form-control col-xs-12 col-sm-6" id="memberName" type="text"  readonly="readonly" value="${(returnDatas.data.memberName)!''}"/>
+						<input name="userId"  id="userId" value="${(returnDatas.data.userId)!''}"  type="hidden" check="require" />
+						<span class="input-group-btn">
+								<a  class="btn btn-sm btn-primary" onclick="memberDialog()">
+											<i class="fa fa-search"></i>
+								</a>
+						 </span>
+					</div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="courseNameId" >课程:</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="input-group" style="width:50%">
+						<input name="courseName" class="form-control col-xs-12 col-sm-6" id="courseName" type="text"  readonly="readonly" value="${(returnDatas.data.courseName)!''}"/>
+						<input name="courseNameId"  id="courseNameId" value="${(returnDatas.data.courseNameId)!''}"  type="hidden" check="require" />
+						<span class="input-group-btn">
+								<a  class="btn btn-sm btn-primary" onclick="courseDialog()">
+											<i class="fa fa-search"></i>
+								</a>
+						 </span>
+					</div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="mark" >成绩:</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="mark" class="col-xs-12 col-sm-6" id="mark" value="${(returnDatas.data.mark)!''}"  type="text" />
+					</div><div class="help-block" for="mark"></div>
+				</div>
+			</div>
+			<div class="space-2"></div>
+			<div class="form-group">
+			<input type="hidden" name="gpa" value=""/>
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="gpa" >绩点:</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input  class="col-xs-12 col-sm-6" id="gpa" value="${(returnDatas.data.gpa/10)!0}"  type="text" readonly="readonly" />
+					</div><div class="help-block" for="gpa"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+		</form>
+		<div class="wizard-actions">
+			<button class="btn btn-success btn-info" data-last="Finish" onclick="commonUpdateForm('validation-form','${ctx}/front/workmark/list');">
+				保存
+			</button>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+Handlebars.registerHelper("learnType",function(courseType){
+	var str ="";
+	switch(courseType){
+	case '1':
+		str = "必修";
+		break;
+	case '0':
+		str = "选修";
+		break;
+	default:str = "/";
+	}
+	return str;
+});
+/*初始化学期下拉框*/
+$('#schoolItem').val(${(returnDatas.data.schoolItem)!''});
+$('#mark').on('keyup',function(){
+	var mark = parseInt(this.value);//输入的成绩
+	var gpa = 0;
+	if(!mark){
+		return;
+	}else if(mark >= 90){
+		gpa = 40;
+	}else if(mark >= 85){
+		gpa = 37;
+	}else if(mark >= 80){
+		gpa = 32;
+	}else if(mark >= 75){
+		gpa = 27;
+	}else if(mark >= 70){
+		gpa = 22;
+	}else if(mark >= 65){
+		gpa = 17;
+	}else if(mark >= 60){
+		gpa = 12;
+	}else if(mark < 60){
+		gpa = 0;
+	}
+	if(gpa){
+		$('#gpa').val((gpa/10).toFixed(1));
+	}else{
+		$('#gpa').val(gpa);
+	}
+	$('input[name=gpa]').val(gpa);
+});
+</script>
+
+</#escape>

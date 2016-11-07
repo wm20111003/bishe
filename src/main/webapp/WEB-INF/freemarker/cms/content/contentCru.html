@@ -1,0 +1,544 @@
+<#import "/common/upload.html" as uploadMacro/>
+<#import "/common/theme.html" as themeMacro />
+<#import "/common/property.html" as propertyMacro />
+<#escape x as x?html>
+<link href="${ctx}/js/select2/select2.css" rel="stylesheet"/>  
+<script type="text/javascript" src="${ctx}/js/select2/select2.min.js"></script>
+<script type="text/javascript" src="${ctx}/js/select2/select2_locale_zh-CN.js"></script>
+<script type="text/javascript" src="${ctx}/js/select2/remote.js"></script>
+<script type="text/javascript" src="${ctx}/js/coms/ajaxfileupload/ajaxfileupload.js"></script>
+<link rel="stylesheet" href="${ctx}/js/artDialog/css/ui-dialog.css">
+<script src="${ctx}/js/artDialog/dist/dialog-plus-min.js"></script>    
+<script src="${ctx}/js/cms/property.js"></script>  
+
+<script type="text/javascript">  
+
+KindEditor.ready(function(K) {
+	window.editor = K.create('#content',{ 
+		//cssPath : '../plugins/code/prettify.css',
+		uploadJson : ctx+'/upload/upload_json', 
+		fileManagerJson :  ctx+'/upload/file_json_manager',
+		allowFileManager : true,
+    	afterBlur:function(){
+    		this.sync(); 
+    	}
+	});  
+	
+});  
+	$(document).ready(function() {
+		//默认选中 
+		jQuery("#contentType option[value='${(returnDatas.data.contentType)!''}']").prop("selected",true);
+	    //默认隐藏高级
+	    $(".moreconfig").each(function(i,obj){
+	    	$(obj).hide();
+	    });
+		   if($("#hid_loginReq").val()=="1"){  
+			   document.getElementById("loginReq").checked=true;
+		   } 
+		//打开关闭控制
+		moreconfigControl('tr_tag');
+		//查询自定义字段 
+		findPropertyByBusiness($("#id").val(),'content','1');   
+		
+		var demo=myValidataForm();
+		demo.addRule([
+		        {
+					ele:"#siteId",
+					datatype:"*",
+					nullmsg:"请选择站点!"
+			    },
+	  		  	{
+	  		  		ele:"#name",
+	  		  		datatype:"*",
+	  		  		nullmsg:"请填写栏目名称!"
+	  		  	}
+			    ,{
+	  		  		ele:"#title",
+	  		  		datatype:"*",
+	  		  		nullmsg:"请填写文章标题!" 
+	  		  	}
+			    ,{
+	  		  		ele:"#content",
+	  		  		datatype:"*",
+	  		  		nullmsg:"请填写文章内容!"
+	  		  	}
+	  		  ,{
+	  		  		ele:"#pcchannelId",
+	  		  		datatype:"*",
+	  		  		nullmsg:"请选择文章的电脑栏目!"
+	  		  	}
+	  		  	
+	  		  
+		]);
+		
+		//加载站点
+		ajaxfindsite();
+		$("#siteId").on("change", function(e) {
+			var siteId=$("#siteId").select2("val"); 
+			if(siteId!=null&&siteId!=""){ 
+	            //加载栏目
+				findchannel(siteId);
+	            //根据栏目设置默认主题
+	            
+			}
+		});
+		
+		$("#uploadfile").bind('change', ajaxUploadPicture);
+		//打开栏目标签
+		$("#li_pc_").attr("class","active");
+		$("#div_pc_").attr("class","tab-pane active");
+		
+		
+		
+		$("#li_pc_content_").attr("class","active");
+		$("#div_pc_content_").attr("class","tab-pane active");
+		
+		$("#li_mobile_content_").attr("class","active");
+		$("#div_mobile_content_").attr("class","tab-pane active");
+		
+		$("#li_weixin_content_").attr("class","active");
+		$("#div_weixin_content_").attr("class","tab-pane active");
+		
+		var id=document.getElementById("id").value;
+		if(id!=''){
+			var siteId=document.getElementById("hid_siteId").value;
+			//查询站点下栏目
+			findchannel(siteId);  
+		    setThemes(id);
+		}
+		
+        //选择栏目
+        $(".c_channel").each(function(i,obj){
+			$(obj).bind('change',function(){
+				//加载内容
+				var siteId=$("#siteId").select2("val"); 
+				var channelId=this.value;
+				if(channelId!=null&&channelId!=""){
+					ajaxfindcontent(siteId,channelId,'');
+					//如果是添加操作  查询栏目配置的文章模板 给模板赋默认值
+					if($("#id").val()==""){
+						setContentDefaultTheme(this.value);  
+					}
+				}
+			}); 
+        });
+		
+		
+	}); 
+	
+	function setContentDefaultTheme(bussinessId){
+		jQuery.ajax({
+			url : ctx+"/cms/link/ajax/list",
+			type : "post",
+			data:{'bussinessId':bussinessId},
+			dataType : "json",
+			success : function(_json) {
+				if(_json.status=="error"){
+					return;
+				}
+				var saa=new Array();
+                $(_json.data).each(function(i,obj){
+                	if(obj.nodeftlId!=null){
+                	  saa.push(obj.nodeftlId);
+                	}
+                });
+                	$("input[type='radio']").each(function(j,oo){ 
+                		if(saa.indexOf(oo.value)!=-1){ 
+                			oo.checked=true;
+                		}else{
+                			oo.checked=false; 
+                		}
+                	}); 
+			}
+
+		});
+	}
+	/**
+	//切换站点或栏目时候清空数据
+	function cleardata(){
+		//左边列表
+		$("#tab_left tbody").empty(); 
+		//右边列表
+		$("#tab_right input[type!='radio']").each(function(i,obj){
+			$(obj).val("");  
+		}); 
+		$("#tab_right textarea").each(function(i,obj){
+			$(obj).val("");  
+		});
+		//editor.html('');
+	}
+	
+	//查看
+	function bindlook(){
+		//查看文章内容
+		 $(".sub_left_menu tbody tr").click(function(){ 
+			$(".sub_left_menu tbody tr.active").removeClass("active");
+			$(this).attr("class", "active");
+			var _url=ctx + "/cms/content/look/json?id="+ $(this).attr("id");
+		
+			jQuery.ajax({
+				url : _url,
+				type : "post",
+				dataType : "json",
+				success : function(_json) {
+					if(_json.status=="success"){
+						showdata(_json.data); 
+					}
+				}
+			});
+			return false; 
+		});
+	}
+
+	function showdata(result) { 
+		editor.sync(); 
+		for (var s in result) {
+			if(s!="siteId"&&s!="channelId"){
+			   set_val(s, result[s]);
+		    }
+		}	
+		editor.html(result['content']);       
+		//设置主题
+		var id=result['id'];
+		setThemes(id);   
+	}
+	
+	
+	//栏目下的文章
+	function ajaxfindcontent(siteId,channelId,ostype){
+		$.ajax({
+			url : ctx+"/cms/content/list/json",
+			type : "post",
+			data:{'siteId':siteId,'channelId':channelId,'ostype':ostype}, 
+			dataType : "json",
+			success : function(_json) {
+				if(_json.status=="success"){
+					$(_json.data).each(function(i,obj){
+						$("#tab_left").append("<tr id="+obj.id+"><td>"+obj.title+"</td></tr>");
+					});
+				}
+			}
+		}); 
+		
+	}
+	
+	**/
+	
+
+
+	function findchannel(siteId){
+		if(siteId==null||siteId==""){
+			return false;
+		}
+		$.ajax({
+			url : ctx+"/cms/channel/ajax/findChannel", 
+			type : "post",
+			data:{siteId:siteId}, 
+			dataType : "json",
+			success : function(_json) {
+				if(_json.status=="error"){
+					return;
+				}
+				//channel塞值
+				$(".c_channel").each(function(i,obj){
+					$(obj).empty().append("<option value=''></option>");  
+					$(_json.data).each(function(i,_obj){
+						$(obj).append("<option value='"+_obj.id+"'>"+_obj.name+"</option>");
+					});
+				});
+				//修改操作
+				var id=document.getElementById("id").value;
+				if(id!=''){
+					var siteId=document.getElementById("hid_siteId").value;
+					setChannel(siteId,id); 
+				}
+				
+			}
+		});
+	}
+	
+	function ajaxfindsite(){
+		jQuery.ajax({
+			url : ctx+"/cms/site/list/json",
+			type : "post",
+			dataType : "json",
+			success : function(_json) {
+				if(_json.status=="error"){
+					return;
+				}
+				$("#siteId").append("<option value=''></option>");
+				$(_json.data).each(function(i,_obj){
+					$("#siteId").append("<option value='"+_obj.id+"'>"+_obj.name+"</option>");
+				});
+				
+				if($("#hid_siteId").val()!=""){
+					$("#siteId").val($("#hid_siteId").val());
+				}
+				
+				$("#siteId").select2();
+			}
+
+		});
+	}
+	
+	function ajaxUploadPicture() {
+		jQuery.ajaxFileUpload({
+			url : "${ctx}/upload/image?url=/upload/images/", //用于文件上传的服务器端请求地址
+			secureuri : false, //是否需要安全协议，一般设置为false
+			fileElementId : 'uploadfile', //文件上传域的ID
+			dataType : 'json', //返回值类型 一般设置为json
+			success : function(data, status) //服务器成功响应处理函数
+			{
+				jQuery("#filepath").val(data.data);
+				jQuery("#span_filepath").html(ctx +data.data); 
+				jQuery("#img").attr("src", ctx + data.data);
+				$("#uploadfile").bind('change', ajaxUploadPicture);
+			},
+			error : function(data, status, e)//服务器响应失败处理函数
+			{
+				alert(e);
+			}
+		});
+	}
+	
+	//修改的时候 根据文章获取主题
+	function setThemes(businessId){ 
+		if(businessId==null||businessId==''){
+			return false;
+		}
+		$.ajax({
+			url : ctx+"/cms/link/ajax/list",
+			type : "post",
+			data:{'businessId':businessId},
+			dataType : "json",
+			success : function(_json) {
+				if(_json.status=="error"){
+					return;
+				}
+				var saa=new Array(); 
+                $(_json.data).each(function(i,obj){
+                	saa.push(obj.ftlId);
+                });
+                	$("input[type='radio']").each(function(j,oo){ 
+                		if(saa.indexOf(oo.value)!=-1){ 
+                			oo.checked=true;
+                		}else{
+                			oo.checked=false;
+                		}
+                	}); 
+			}
+
+		});
+	}
+	//获取文章对应各平台的栏目和使用情况
+	function setChannel(siteId,contentId){
+		if(siteId==''||contentId==''){
+			return false;
+		}
+		$.ajax({
+			url : ctx+"/cms/content/ajax/listChannelContent",
+			type : "post",
+			data:{'siteId':siteId,'contentId':contentId},
+			dataType : "json",
+			success : function(_json) {			
+				if(_json.status=="error"){
+					return false;
+				} 
+                $(_json.data).each(function(i,obj){
+                	var ostype=obj['ostype'];
+                	var channelId=obj['channelId'];
+                	var state=obj['state'];
+                	$("#"+ostype+"channelId").val(channelId); 
+                	if(state==1){
+                		document.getElementById(ostype+"state").checked=true;
+                	}else{
+                		document.getElementById(ostype+"state").checked=false;
+                	}
+                });
+ 
+			}
+
+		});
+	}
+	
+	//自定义属性弹出层
+	function showSelDg(){
+		var businessId=$("#id").val();
+		if(businessId==null||businessId==""){
+			alert("添加自定义字段之前请先选择文章！");
+			return false;   
+		}
+		$("#propertyModelType").val("channel"); 
+		showdg(null,null,businessId);   
+	}
+	
+</script>
+	
+	 
+	
+	
+	<!-- 功能操作区域结束 -->
+<!-- 列表显示区域  -->
+<form class="form-horizontal" method="post"  action="${ctx}/cms/content/update"  name="updateForm" id="updateForm">
+<div class="row">
+<@uploadMacro.upload />
+	<div class="col-sm-12" >
+			<input type="hidden" id="id" name="id" value="${(returnDatas.data.id)!''}"/>
+			<input type="hidden" name="opmode" id="opmode" value="">
+			
+			<table class="table table-bordered" id="tab_right" >
+			  <tbody>		
+
+						<tr>
+						   <th>选择站点:</th>
+						   <td> 
+						   <input type="hidden" id="hid_siteId" value="${(returnDatas.data.siteId)!''}"/>
+						   <select  id="siteId" name="siteId" style="width:500px;"></select> 
+						   	 </td>
+						</tr>
+						
+						
+						<tr>
+						   <th>文章标题*:</th>
+						   <td><input class="form-control" type="text" id="title" name="title" value="${(returnDatas.data.title)!''}"> </td>
+						</tr>
+						
+						<tr>
+                          <th>小标题</th>
+                          <td><input class="form-control" type="text" id="mintitle" name="mintitle" value="${(returnDatas.data.mintitle)!''}"> </td>
+						</tr>
+						
+						<tr>
+						<th>上传图片：</th>
+						<td>
+							<div style="padding-right: 40px;padding-left: 30px;position:relative;">
+								<input type="hidden" id="filepath" name="filepath" value="${(returnDatas.data.picture)!''}"/>
+								 <img
+									id="img" src="${ctx}${(returnDatas.data.picture)!''}" 
+									style="width: 150px; height: 100px;"
+									class="img-thumbnail col-12">							
+							      <!--   上传路径:<span id="span_filepath"> ${(returnDatas.data.picture)!''} </span> -->
+								<a class="btn btn-sm btn-primary"
+									style="height: 35px; width: 120px; display: block; position:absolute;right: 15px;bottom: 15px;"
+									href="####" onclick="uploadImg(this,'filepath','div','img');">上传</a>
+							</div>
+						</td>
+					</tr>
+						
+						<tr>
+                          <th>文章内容*</th>
+                          <td>
+                             <textarea id="content" name="content">${(returnDatas.data.content)!''}</textarea>
+                           </td>
+						</tr>
+						
+						
+						<tr>
+                          <th>关键字</th>
+                          <td><input class="form-control" type="text" id="keywords" name="keywords" value="${(returnDatas.data.keywords)!''}" placeholder="动态新闻、专栏"/> </td>
+						</tr>
+						
+						<tr>
+                          <th>内容类型</th>
+                          <td>
+                              <select class="form-control" id="contentType" name="contentType" >
+                              <option value="default">普通</option>
+                              <option value="focus">焦点</option>
+                              <option value="bignews">头条</option>
+                              <option value="marquee">滚动</option>
+                              <option value="recommend">推荐</option>
+                              </select> 
+                          </td>
+						</tr>
+						
+						
+						<tr>
+                          <th>来源</th>
+                          <td><input class="form-control" type="text" id="source" name="source" value="${(returnDatas.data.source)!''}"> </td>
+						</tr>
+						
+						<tr>
+                          <th>作者</th>
+                          <td><input class="form-control" type="text" id="author" name="author" value="${(returnDatas.data.author)!''}"> </td>
+						</tr>
+						
+						<tr>
+								<th>描述</th>			
+								<td  class="col-sm-8">
+								<textarea class="form-control" name="description" id="description" rows="3" class="col-xs-12" >${(returnDatas.data.description)!''}</textarea>
+								</td>
+					    </tr>
+					    	
+						 <tr>
+						   <th>文章主题</th>
+						   <td><@myconfig /> </td>
+						</tr>
+						
+						<tr id="tr_tag"  class="myclose" ><th colspan="2" style="text-align: center;cursor:pointer;" ><i class="black ace-icon fa fa-cog">&nbsp;&nbsp;点击显示高级配置</i></th></tr>
+						<tr class="moreconfig">
+							<th>要求先登录：</th> 
+							<td><input type="checkbox" name="loginReq"  id="loginReq" value="0"/>
+							    <input type="hidden" id="hid_loginReq" value="0"/>
+							</td>
+						</tr>
+						<#if returnDatas?? && returnDatas.data?? && returnDatas.data.id??>
+					    	<@propertyMacro.showSelColumn /> 
+					    </#if> 					
+						
+			  </tbody>
+			</table>
+
+			
+	</div>
+</div>
+
+</form>
+
+		<div class="panel-body">			
+			<div style="float:left;margin-left: 500px;">
+				<button onclick="validateSubmit('updateForm','${ctx}/cms/content/list')"
+					class="btn  btn-sm  btn-success">
+					<i class="ace-icon fa fa-floppy-o bigger-130"></i>保存
+				</button>
+			</div>
+		</div>
+	
+		
+     <!-- 弹出层 -->
+        <@propertyMacro.selfColumn/> 
+
+<!-- 主题表格 -->
+<#macro myconfig  m='' rm=''>
+   <#assign listos=['pc','mobile','weixin']  listmodel=['site','channel','content'] />
+   <div class="tabbable"  id="div_tab">
+			<ul id="myTab4" class="nav nav-tabs">
+                <@themeMacro.li_ostype ostype='pc'  osname='电脑' mark="${m}" icon='fa fa-laptop' />
+                <@themeMacro.li_ostype ostype='mobile' osname='手机' mark="${m}" icon='fa fa-globe'/>
+                <@themeMacro.li_ostype ostype='weixin' osname='微信' mark="${m}" icon='fa fa-comments'/>
+			</ul>
+            
+	        <div class="tab-content">
+	                 <#list listos as os>
+						<div class="tab-pane" id="div_${os}_${m}">
+						    <p>选择栏目：<select  id="${os}channelId" name="${os}channelId" style="width:200px;" class="c_channel"> </select></p>
+						    <p>是否显示：<input type="checkbox" name="${os}state" id="${os}state" value="1" checked="checked" /></p>
+						
+							<div class="tabbable tabs-left">
+							 	<@themeMacro.nav_left ostype='${os}' mark='${m}'/>
+								<div class="tab-content">
+                                        <#list listmodel as mod>
+                                                  <#if rm=''>
+                                                     <@themeMacro.tabshow ostype='${os}' modelType='${mod}' mark='${m}'  />
+                                                  <#else>
+                                                     <@themeMacro.tabshow ostype='${os}' modelType='${mod}' mark='${m}' radioModel='${mod}' />
+                                                  </#if>
+                                        </#list>
+								</div>
+							</div>
+						</div>
+	                 </#list> 
+	         </div>
+	</div>
+</#macro>
+
+</#escape>

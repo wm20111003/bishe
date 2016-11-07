@@ -1,0 +1,131 @@
+<#escape x as x?html>
+<script src='${ctx}/js/ajaxfileupload.js'></script>
+<SCRIPT type="text/javascript">
+<!--
+
+jQuery(document).ready(function(){
+	//回选 下拉框
+	//jQuery("#search_state option[value='是']").prop("selected",true);
+	
+	/*
+	$('.date-picker').datepicker({
+		    autoclose: true,
+		    format: 'yyyy-mm-dd',
+		    language: 'zh-CN'
+		    //,todayBtn: 'linked',
+		    //startDate:new Date(2014,10,27),
+			//endDate:'+60d',
+		    //startDate: '+1d',
+		}).next().on(ace.click_event, function(){
+			$(this).prev().focus();
+		});
+	*/
+	
+	
+	
+	});
+//-->
+
+function validateImage(th, obj) {
+	var file = jQuery(th).parent("div").find("#" + obj);
+	var tmpFileValue = file.val();
+	// 校验图片格式
+	if (/^.*?\.(zip|rar|ppt|pdf|swf|doc|xls)$/.test(tmpFileValue.toLowerCase())) {
+		return true;
+	} else {
+		alert("上传格式不正确！");
+		return false;
+	}
+
+	if (file.val() === "") {
+		alert("请选择上传的文件!");
+		return false;
+	}
+}
+
+/**
+ * 上传
+ */
+function uploadFileImg(th, fileId,_urlId) {
+	if (validateImage(th, fileId)) {
+		jQuery.ajaxFileUpload({
+			url :ctx + '/common/upFile/uploadImage',
+			secureuri : false,// 是对POST数据的加密设置
+			fileElementId : "_fileUpload", // 文件选择框的id属性
+			dataType : 'json', // 服务器返回的格式，可以是json，IE中如果返回的不是JOSN会出错，火狐不出错
+			success : function(_json) { // 相当于java中try语句块的用法
+				if(_json!=""){
+					_json = eval("(" + _json + ")");
+				}
+				$("#" + _urlId).val(_json.data.ftlName);
+				$('#ftlPath').val(_json.data.ftlPath);
+			},
+			error : function(_json) { // 相当于java中catch语句块的用法
+			
+			}
+		});
+	}
+}
+
+function mySubmit(){
+	var fileURL=$("#ftlName").val();
+	if(fileURL =="" || !fileURL){
+		alert("请上传文件");
+	}else{
+		commonUpdateForm('validation-form','${ctx}/workcourse/list');
+	}
+}
+</SCRIPT>
+
+
+
+<div class="row">
+	<div class="col-xs-12">
+		<form class="form-horizontal" id="validation-form" method="POST" novalidate="novalidate" action="${ctx}/workcourse/update" > 
+			<input type="hidden" id="id" name="id" value="${(returnDatas.data.id)!''}"/>
+			<input type="hidden" id="ftlPath" name="ftlPath"/>	
+<!--input  hidden  End-->
+			<div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="author" >主教老师</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="author" class="col-xs-12 col-sm-6" id="author" value="${(returnDatas.data.author)!''}"  type="text" />
+					</div><div class="help-block" for="author"></div>
+				</div>
+			</div>
+	       
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="ftlPath" >上传</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+					<input type="file" id="_fileUpload" name="_fileUpload" style="width: 70px" onchange="uploadFileImg(this,'_fileUpload','ftlName');">
+						<input name="ftlName" class="col-xs-12 col-sm-6" id="ftlName" value="${(returnDatas.data.filePath)!''}"  type="text" />
+					</div><div class="help-block" for="filePath"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="courseType" >课程类型</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<#--<input name="courseType" class="col-xs-12 col-sm-6" id="courseType" value="${(returnDatas.data.courseType)!''}"  type="text" />-->
+						<select name="courseType" id="courseType">
+							<option value="ch" selected="selected">中文</option>
+							<option value="en">English</option>
+						</select>
+					</div><div class="help-block" for="courseType"></div>
+				</div>
+			</div>
+		</form>
+		<div class="wizard-actions">
+			<button class="btn btn-success btn-info" data-last="Finish" onclick="mySubmit()">
+				保存
+			</button>
+		</div>
+	</div>
+</div>
+
+
+</#escape>

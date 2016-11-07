@@ -1,0 +1,212 @@
+<#escape x as x?html>
+
+
+<script type="text/javascript">
+
+function deleteWorkCoursename(){
+	var id=jQuery("#id").val();
+	if(!id||id==""){
+		myalert("请选择你要删除的记录");
+		return;
+	}else{
+		var _url="${ctx}/workcoursename/delete?id="+id;
+		var listurl="${ctx}/workcoursename/list";
+		mydelete(_url,listurl);
+	}
+}
+
+
+function mydeleteRow(_url, formId) {
+	myconfirm("删除课程后相应的成绩也将被删除,是否确认删除?", function() {
+		jQuery.post(_url, null, function(_json) {
+			if (_json.status == "success") {
+				myalert(_json.message, function() {
+					myhref(formId);
+				});
+			} else {
+				myalert(_json.message);
+			}
+		});
+	});
+}
+</script>
+
+
+	
+
+<!-- /.page-header -->
+
+<div class="row">
+    <div class="col-xs-12">
+<div class="operate panel panel-default" style="height:65px;">
+	<div class="panel-body">
+		<div class="pull-left">
+ <form class="form-horizontal" name="searchForm" id="searchForm" action="${ctx}/workcoursename/list" role="form">
+            <input type="hidden" name="pageIndex" id="pageIndex" value="${(returnDatas.page.pageIndex)!'1'}"/>
+            <input type="hidden" name="sort" id="page_sort" value="${(returnDatas.page.sort)!'desc'}"/>
+            <input type="hidden" name="order" id="page_order" value="${(returnDatas.page.order)!'id'}"/>
+			<label for="search_state"><b>是否可用:</b></label> 
+			 <select id="search_state" name="state" class="col-10" >
+				<option value="是">是</option>
+				<option value="否">否</option>
+			</select>
+			<a  href="javascript:mySubmitForm('searchForm');"
+				class="btn btn-purple btn-sm">
+					查询 <i class="ace-icon fa fa-search icon-on-right bigger-10"></i>
+				</a>
+
+</form>
+		</div>
+		<div class="pull-right">
+			    <@shiro.hasPermission name="/front/workcoursename/list/export" >
+				  <button onclick="myexport('searchForm','${ctx}/front/workcoursename/list/export');" class="btn  btn-sm  btn-primary">
+                      
+                        导出
+                    </button>
+		    	</@shiro.hasPermission>
+			    <@shiro.hasPermission name="/front/workcoursename/update" >
+				  <button onclick="myhref('${ctx}/front/workcoursename/update/pre');" class="btn  btn-sm  btn-primary">
+                        添加
+                    </button>
+			    </@shiro.hasPermission>
+			    <@shiro.hasPermission name="/front/workcoursename/delete" >
+			    |
+				  <button onclick="deleteWorkCoursename();" class="btn btn-sm btn-danger">
+                        删除
+                    </button>
+			    </@shiro.hasPermission>
+			
+		</div>
+	</div>
+</div>
+
+   <div class="row">
+            <div class="col-xs-12">
+	            <!--start_export-->
+                <table id="listDataTable" border="1" class="table table-striped table-bordered table-hover">
+                    <!--end_no_export-->
+                    <!--first_start_export-->
+                    <thead>
+                    <tr>
+                        <!--first_end_no_export-->
+						<th id="th_courseName" >课程</th>
+						<th id="th_courseType" >修习类别</th>
+						<th id="th_courseType" >学分</th>
+						<th id="th_courseType" >学期</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <!--first_end_export-->
+
+                    <!--start_export-->
+                    <tbody>
+           
+				   <#if (returnDatas.data??)&&(returnDatas.data?size>0)>
+					 <#list returnDatas.data as _data>
+                            <!--start_no_export-->
+                            <tr class="">
+                            	<td >
+								${(_data.courseName)!''}
+							</td>
+							<td >
+								<#if _data.courseType == "1">
+									必修
+									<#else>
+									选修
+								</#if>
+							</td>
+							<td >
+								${(_data.credit)!''}
+							</td>
+							<td >
+								<#switch _data.schoolItem>
+						           <#case "1">
+						              	第一学期
+						              <#break>
+						           <#case "2">
+						              	第二学期
+						              <#break>
+						           <#case "3">
+						              	第三学期
+						              <#break>
+						           <#case "4">
+						              	第四学期
+						              <#break>
+						           <#case "5">
+						              	第五学期
+						              <#break>
+						           <#case "6">
+						              	第六学期
+						              <#break>
+						           <#case "7">
+						              	第七学期
+						              <#break>
+						           <#case "8">
+						              	第八学期
+						              <#break>
+						        </#switch>
+							</td>
+                                <td>
+                                    <div class="hidden-sm hidden-xs btn-group">
+                                        <button class="btn btn-xs btn-info"
+                                                onclick="myhref('${ctx}/front/workcoursename/update/pre?id=${(_data.id)!''}');">
+                                            <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                        </button>
+                                        <button class="btn btn-xs btn-danger"
+                                                onclick="mydeleteRow('${ctx}/front/workcoursename/delete?id=${(_data.id)!''}','${ctx}/front/workcoursename/list');">
+                                            <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                        </button>
+                                    </div>
+                                    <div class="hidden-md hidden-lg">
+                                        <div class="inline position-relative">
+                                            <button class="btn btn-minier btn-primary dropdown-toggle"
+                                                    data-toggle="dropdown" data-position="auto">
+                                                <i class="ace-icon fa fa-cog icon-only bigger-110"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">
+	                                          <li>
+													<a  href="javascript:myhref('${ctx}/workcoursename/look?id=${(_data.id)!''}');"  class="tooltip-info" data-rel="tooltip" title="View">
+														<span class="blue">
+															<i class="ace-icon fa fa-search-plus bigger-120"></i>
+														</span>
+													</a>
+											  </li>	
+                                                <li>
+                                                    <a data-original-title="Edit"
+                                                       href="javascript:myhref('${ctx}/front/workcoursename/update/pre?id=${(_data.id)!''}');"
+                                                       class="tooltip-success" data-rel="tooltip" title="">
+																		<span class="green">
+																			<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>
+																		</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a data-original-title="Delete"
+                                                       href="javascript:mydelete('${ctx}/front/workcoursename/delete?id=${(_data.id)!''}','${ctx}/workcoursename/list');"
+                                                       class="tooltip-error" data-rel="tooltip" title="">
+																		<span class="red">
+																			<i class="ace-icon fa fa-trash-o bigger-120"></i>
+																		</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                                <!--end_no_export-->
+						</tr>
+					</#list>
+					 </#if>
+                    </tbody>
+                </table>
+                <!--end_export-->
+            </div>
+            <!-- /.span -->
+        </div>
+        <#if returnDatas.page??>	
+            <@h.pagetoolbar page=returnDatas.page formId='searchForm' />
+         </#if>
+    </div>
+</div>
+<!-- /.main-container -->
+</#escape>

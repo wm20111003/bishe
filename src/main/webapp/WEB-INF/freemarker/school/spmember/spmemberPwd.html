@@ -1,0 +1,75 @@
+<#escape x as x?html>
+<script>
+jQuery(document).ready(function(){
+	window.demo2 = myValidataForm('#updateForm1');
+	demo2.addRule([
+		  		  	{
+	  		  			ele:"#password_new",
+	  		  			datatype:"*5-16",
+	  		  			nullmsg:"请设置密码!",
+	  		  			errormsg:"密码范围在6-16位之间!"
+	  		  		},{
+	  		  			ele:"#password_confirm",
+	  		  			datatype:"*",
+	  		  			recheck:"password_new",
+	  		  			nullmsg:"请再次输入密码",
+	  		  			errormsg:"密码不一致,请重新输入!"
+	  		  		}
+		  		  ]);
+});
+	
+	//修改密码，提交操作
+function mysubmit(){
+	var demo=$("#updateForm1").Validform();
+	if(demo.check()){
+		var password_new = $("#password_new").val();
+		var id=$("#id").val();
+		$.ajax({
+			type:'POST',
+			url:'${ctx}/spmember/editPwd',
+			data:{
+				'password_new':password_new,
+				'id':id
+					},
+			// 服务端返回的数据格式，一般是json,text,xml
+			dataType:'json',
+			success:function(data){
+				myalert(data.message);
+				var msg = data.status;
+				if(msg == "success"){
+					myhref('${ctx}/spmember/list'); 
+				}
+				}
+			});
+	}
+}
+</script>
+<div class="pull-right">
+				  <button onclick="mysubmit();" class="btn  btn-sm  btn-primary">
+                        	保存
+                    </button>
+
+			
+</div>
+		<form method="post" id="updateForm1">
+        <input type="hidden"  id="id"  name="id" value="${(id)!''}"/>
+	     <table class="table table-bordered" style="width:90%">
+	     	<tr>
+				<th><nobr>会员名称：</nobr></th>
+				<td colspan="2">
+					${(name)!''}
+				</td>
+			</tr>
+			<tr>
+				<th>新密码*</th>
+				<td colspan="2"><input type="password" name="password_new" id="password_new" class="form-control"></td>
+			</tr>
+			<tr>
+				<th>确认密码*</th>
+				<td colspan="2"><input type="password" name="password_confirm" id="password_confirm" class="form-control"></td>
+			</tr>	
+	     </table>
+	     
+	     </form>
+	     
+</#escape>

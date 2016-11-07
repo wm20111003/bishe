@@ -1,0 +1,45 @@
+<#import "/userpage/${userAccount}/${siteId}/common/common.html" as cmMacro />  
+<#assign mctx='${ctx}/userstatic/common' />
+ <@cmMacro.head title='档案记录'/>
+		<style type="text/css">
+			body{background: url(${mctx}/images/bg2.jpg) no-repeat;}
+			.connel dd b{width: 100px;display: inline-block;text-align: right;padding: 5px 20px 5px 10px;}
+		</style>
+	<body>
+		<@cmMacro.top/>
+		<@cmMacro.navigator channelSort='record'/>
+			
+		<div class="container mg-t20">
+			<div class="row" style="min-height:420px;">
+				<div class="col5">
+					<dl class="connel">
+						<dt>档案信息</dt>
+						<dd><a href="http://www.chsi.com.cn/">学信网</a></dd>
+					</dl>
+				</div>
+				<@sp_member_bean>
+				<div class="col19">
+					<dl class="connel">
+					<#if tag_bean??>
+						<dt>&nbsp;</dt>
+						<dd><b>姓名:</b>${tag_bean.account!''}</dd>
+						<dd><b>性别:</b>${tag_bean.sex!''}</dd>
+						<dd><b>出生年月:</b>1992-08-02</dd>
+						<dd><b>身份证:</b>${tag_bean.description!'未登记'}</dd>
+						<dd><b>学籍号:</b>232383</dd>
+						<dd><b>最高学历:</b>${tag_bean.gradeId!'未登记'}</dd>
+						<dd><b>学位:</b>学士</dd>
+						<dd><b>政治面貌:</b>党员</dd>
+						<dd><b>毕业院校:</b>郑州轻工业学院</dd>
+						<dd><b>入学时间:</b>${tag_bean.createDate!''}</dd>
+						<dd><b>籍贯:</b>河南省</dd>
+						<#else>
+							暂无信息!
+						</#if>
+					</dl>
+				</div>
+				</@sp_member_bean>
+			</div>
+		</div>
+<@cmMacro.foot siteId='${siteId}' ostype='${ostype}' index=1 />	
+	</body>

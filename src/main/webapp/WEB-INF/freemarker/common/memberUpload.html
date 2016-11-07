@@ -1,0 +1,43 @@
+<!-- 上传组件 -->
+<#macro upload >
+<script src='${ctx}/js/ajaxfileupload.js'></script>
+<script src='${ctx}/js/upload/upload.js'></script>
+
+<div class="tabbable" id="_imgSpacse" style="width: 600px">
+
+<img width="16" height="16" border="0" alt="" src="${ctx}/images/go-up.gif" name="moveupImg" >
+<input type="hidden" id="_parentPath" />
+<input type="hidden" id="_currPath" />
+<a href="####" onclick="backDirc('','');">移动到上一个文件夹</a>
+
+<input type="button" value="创建文件夹" class="btn btn-minier btn-purple" style="position: absolute;right:0px;" onclick="makdir('','');"/>
+	<ul class="nav nav-tabs" id="myTab">
+		<li class="active"><a data-toggle="tab" href="#home"> <i
+				class="green ace-icon fa fa-home bigger-120"></i> 图片空间
+		</a></li>
+
+		<li><a data-toggle="tab" href="#profile"> 系统资源 <span
+				class="badge badge-danger"></span>
+		</a></li>
+	</ul>
+
+	<div class="tab-content" style="height: 350px; overflow:scroll">
+		<div id="home" class="tab-pane in active">
+			<ul class="ace-thumbnails clearfix" id="_space">
+				
+			</ul>
+		</div>
+
+		<div id="profile" class="tab-pane">
+			<ul class="ace-thumbnails clearfix" id="_sys_space">
+				
+			</ul>
+		</div>
+	</div>
+	<div class="well" style="width: 100%">
+			<input type="file" id="_fileUpload" name="_fileUpload" style="width: 70px" onchange="uploadFileImg(this,'_fileUpload');">		
+	</div>
+</div>
+
+</#macro>
+

@@ -1,0 +1,81 @@
+<#import "/userpage/${userAccount!'admin'}/${siteId!'a16'}/common/common.html" as cmMacro />  
+<#assign mctx='${ctx}/userstatic/common' />
+<#import "/common/tag.html" as tag />
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>新闻详情</title>
+		<link rel="stylesheet" type="text/css" href="${mctx}/css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="${mctx}/css/layout.css"/>
+		<link rel="stylesheet" type="text/css" href="${mctx}/css/md-min.css"/>
+		<link rel="stylesheet" type="text/css" href="${mctx}/css/flexslider.css"/>
+		<script src="${mctx}/js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+		body{margin:20px 0;}
+			 h1.center,p.center{text-align: center;margin: auto;}
+			.newsList ul li{text-indent: 2em;line-height: 30px;letter-spacing: .5;margin-top: 20px;}
+			.connel dd b{width: 100px;display: inline-block;text-align: right;padding: 5px 15px;}
+			.connel dd{*overflow: hidden; *zoom: 1;padding: 5px 10px;border-bottom: 1px solid #ddd;}
+			.connel dd span.time{padding-right: 20px;}
+			.connel dd:after{display: table;content: "";width: 0;clear: both;}
+			p{line-height: 30px;}
+			.QQbox {z-index:99;right:0;width:60px;height:40px;position:absolute;}
+			.goback{background: #009900;padding:10px;color:#fff;font-size:16px;border-radius:5px;font-weight:bold;}
+			
+		</style>
+	</head>
+	<body>
+
+		<div class="container mg-t30">
+			<div class="row">
+				<#if content??>
+				<div class="col16">
+					<h1 class="center">${content.title!''}</h1>
+					<p class="center" style="margin: 10px auto;"><small>${(content.createDate!'')?string('yyyy-MM-dd HH:mm:ss')} &nbsp;来源:${content.source!''}</small></p>
+					<div class="newsList">
+						<ul>
+							${content.content!''}
+						</ul>
+					</div>
+				</div>
+				</#if>
+				<#if conList??>
+				<#list conList as c>
+				<div class="col7">
+					<dl class="connel">
+						<dt>${c.keywords!''}</dt>
+						<dd><a href="javascript:" onclick="_href('${c.id}')">${c.title!''} </a></dd>
+					</dl>
+				</div>
+				</#list>
+				</#if>
+			</div>
+			
+		</div>
+	<div class="QQbox" id="divQQbox" >
+      	<a href="javascript:history.go(-1)" class="goback">返回</a> 
+	</div>
+	</body>
+	<script type="text/javascript">
+	window.onload = window.onresize = window.onscroll = function ()
+	{
+	 var oBox = document.getElementById("divQQbox"); 
+	 var iScrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+	 setTimeout(function ()
+	 {
+	  clearInterval(oBox.timer);
+	  var iTop = parseInt((document.documentElement.clientHeight - oBox.offsetHeight)/1.7) + iScrollTop;
+	  oBox.timer = setInterval(function ()
+	  {
+	   var iSpeed = (iTop - oBox.offsetTop) / 8;
+	   iSpeed = iSpeed > 0 ? Math.ceil(iSpeed) : Math.floor(iSpeed);
+	   oBox.offsetTop == iTop ? clearInterval(oBox.timer) : (oBox.style.top = oBox.offsetTop + iSpeed + "px");
+	  }, 30)
+	 }, 100)
+	};
+	/*========================*/
+	function _href(id){
+	window.location.href='${ctx}/front/content/contentInfo?cid='+id;
+}
+	</script>
+</html>

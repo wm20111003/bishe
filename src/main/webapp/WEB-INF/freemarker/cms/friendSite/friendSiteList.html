@@ -1,0 +1,318 @@
+<#escape x as x?html>
+<link href="${ctx}/js/select2/select2.css" rel="stylesheet" />
+<script type="text/javascript"
+	src="${ctx}/js/coms/ajaxfileupload/ajaxfileupload.js"></script>
+<script type="text/javascript" src="${ctx}/js/select2/select2.min.js"></script>
+<script type="text/javascript"
+	src="${ctx}/js/select2/select2_locale_zh-CN.js"></script>
+<script type="text/javascript" src="${ctx}/js/select2/remote.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		//加载站点
+		ajaxfindsite();
+		//加载友情链接
+		listjson($("#siteId").val());
+
+		var demo = myValidataForm();
+		demo.addRule([ {
+			ele : "#siteId2",
+			datatype : "*",
+			nullmsg : "请选择站点!"
+		}, {
+			ele : "#name",
+			datatype : "*",
+			nullmsg : "请填写网站名称!"
+		}, {
+			ele : "#url",
+			datatype : "*",
+			nullmsg : "请填写网站地址!"
+		}, {
+			ele : "#sort",
+			datatype : "*",
+			nullmsg : "请填写排序值，最小值为1;"
+		}
+		/**
+		, {
+			ele : "#logo",
+			datatype : "*",
+			nullmsg : "请上传logo!"
+		} 
+		**/
+		]);
+
+		$("#uploadfile").bind('change', ajaxUploadPicture);
+
+	});
+
+	function left_menu_click() {
+		$(".sub_left_menu table tbody tr").click(
+				function() {
+					$(".sub_left_menu table tbody tr.active").removeClass(
+							"active");
+					$(this).attr("class", "active");
+					var _url = ctx + "/cms/friendsite/look/json?id="
+							+ $(this).attr("id");
+
+					jQuery.ajax({
+						url : _url,
+						type : "post",
+						dataType : "json",
+						success : function(_json) {
+							if (_json.status == "success") {
+								showdata(_json.data);
+							}
+						}
+					});
+					return false;
+				});
+
+	}
+
+	function ajaxUploadPicture() {
+		jQuery.ajaxFileUpload({
+			url : "${ctx}/upload/image?url=/upload/images/", //用于文件上传的服务器端请求地址
+			secureuri : false, //是否需要安全协议，一般设置为false
+			fileElementId : 'uploadfile', //文件上传域的ID
+			dataType : 'json', //返回值类型 一般设置为json
+			success : function(data, status) //服务器成功响应处理函数
+			{
+				jQuery("#logo").val(data.data);
+				jQuery("#headimgsrc").attr("src", ctx + data.data);
+				$("#uploadfile").bind('change', ajaxUploadPicture);
+			},
+			error : function(data, status, e)//服务器响应失败处理函数
+			{
+				alert(e);
+			}
+		});
+	}
+
+	function showdata(result) {
+		for ( var s in result) {
+			set_val(s, result[s]);
+		}
+		jQuery("#headimgsrc").attr("src", ctx + result.logo);
+		hideAllTooltips();
+	}
+
+	function ajaxfindsite() {
+		jQuery.ajax({
+			url : ctx + "/cms/site/list/json",
+			type : "post",
+			dataType : "json",
+			success : function(_json) {
+				if (_json.status == "error") {
+					return;
+				}
+				jQuery("#siteId2").append("<option value=''></option>");
+				jQuery(_json.data).each(
+						function(i, _obj) {
+							jQuery("#siteId2").append(
+									"<option value='"+_obj.id+"'>" + _obj.name
+											+ "</option>");
+						});
+				if ($("#siteId").val() != "") {
+					$("#siteId2").val($("#siteId").val());
+				}
+				$("#siteId2").select2();
+			}
+		});
+	}
+
+	//切换站点时候清空数据
+	function cleardata() {
+		//左边列表
+		$("#left_tbody").empty();
+		//右边列表
+		$("#right_table img").each(function(i, obj) {
+			$(obj).attr("src", "");
+		});
+		$("#updateForm")[0].reset();
+	}
+
+	function deleteFriendSite() {
+	 		var id=$("#id").val();
+	 		if(id!=null){
+	 			jQuery.post('${ctx}/cms/friendsite/delete?id='+id,
+	 					function(_json) {
+	 						if (_json.status == "success") {
+	 							myalert(_json.message, function() {
+	 								 var siteId=$("#siteId2").val();
+	 						 		 var listurl='${ctx}/cms/friendsite/list?siteId='+siteId;
+	 						 			myhref(listurl); 
+	 							});
+	 						} else {
+	 							myalert(_json.message);
+	 						}
+	 					});
+	 		} 
+	}
+	
+	function listjson(siteId) {
+		jQuery.post("${ctx}/cms/friendsite/list/json?siteId=" + siteId,
+				function(_json) {
+					if (_json.status == "success") {
+						cleardata();
+						$(_json.data).each(
+								function(i, obj) {
+									$("#left_tbody").append(
+											"<tr id="+obj.id+"><td>" + obj.name
+													+ "</td><td>" + obj.state
+													+ "</td></tr>");
+								});
+						left_menu_click();
+					} else {
+						myalert(_json.message);
+					}
+				});
+	}
+	
+function updateFriendSite(){ 
+	checkEle();
+	if(checkEle()==false){
+		return false;
+	}
+	var siteId=$("#siteId2").val();
+	$("#siteId").val(siteId);  
+	validateSubmit("updateForm",'${ctx}/cms/friendsite/list?siteId='+siteId);
+}
+
+function checkEle(){
+	var siteId=$("#siteId2").val();
+	jQuery("#siteId2").before("<span class='span_validate'></span>");
+	var objtip=jQuery("#siteId2").siblings(".span_validate");
+	var msg='不能为空!';
+		if(siteId==''||siteId=='undefined'||siteId==' '){
+			hideTooltips(objtip);
+			showTooltips(objtip,msg);
+			return false;
+		}else{
+			listjson(siteId);
+			$("#siteId").val(siteId);
+			hideTooltips(objtip);
+		}
+	}
+	
+	function myrefresh() {
+		var siteId = $("#siteId").val();
+		if (siteId != null) {
+			var url = '${ctx}/cms/friendsite/list?siteId=' + siteId;
+			myhref(url);
+		} else {
+			return false;
+		}
+	}
+</script>
+
+	<div class="operate panel panel-default" style="height:65px;" >
+		<div class="pull-left" style="margin:15px 5px;"><label for="search_state"><b>选择站点:</b></label> </div>
+		<div class="pull-left" style="margin-top:15px;">
+                     <select  id="siteId2" name="siteId2" style="width:200px;" onchange="checkEle()"></select>			
+		</div>
+	
+		<div class="panel-body">
+			<div class="pull-right">
+
+			<@shiro.hasPermission name="/cms/friendsite/update">
+			<div style="float: left; margin-right: 100px;">
+				<button onclick="myrefresh();" class="btn  btn-sm  btn-primary">
+					<i class="ace-icon glyphicon glyphicon-plus"></i>新增
+				</button>
+			</div>
+			<div style="float: left; margin-right: 100px;">
+				<button onclick="updateFriendSite()"
+					class="btn  btn-sm  btn-success">
+					<i class="ace-icon fa fa-floppy-o bigger-130"></i>保存
+				</button>
+			</div>
+			<div style="float: left; margin-right: 30px;">
+				<button onclick="deleteFriendSite()" class="btn  btn-sm  btn-danger">
+					<i class="ace-icon fa fa-trash-o bigger-130"></i>删除
+				</button>
+			</div>
+			</@shiro.hasPermission >
+		</div>
+	</div>
+</div>
+
+
+<!-- 功能操作区域结束 -->
+<!-- 列表显示区域  -->
+<form class="form-horizontal" method="post" action="${ctx}/cms/friendsite/update" name="updateForm" id="updateForm">
+	<div class="row">
+		<div class="col-sm-4 sub_left_menu ">
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>友情链接网站</th>
+						<th>是否可用</th>
+					</tr>
+				</thead>
+				<tbody id="left_tbody">
+				</tbody>
+			</table>
+		</div>
+
+		<div class="col-sm-8">
+			<input type="hidden" name="siteId" id="siteId"
+				value="${(returnDatas.queryBean.siteId)!''}" />
+			<input type="hidden" name="id" id="id"/>	
+			<table id="right_table" class="table table-bordered">
+				<tbody>
+					<tr>
+						<th><nobr>链接网站名称 ：</nobr></th>
+						<td><input class="form-control" type="text" id="name"
+							name="name">
+						</td>
+					</tr>
+
+					<tr>
+						<th><nobr>跳出类型：</nobr></th>
+						<td><select id="linkType" name="linkType">
+								<option value="_self" selected="selected">当前窗体打开</option>
+								<option value="_blank">新窗口打开</option>
+								<option value="_parent">父窗体打开</option>
+								<option value="_top">当前窗体打开并替换整个窗体</option>
+						</select></td>
+					</tr>
+
+					<tr>
+						<th><nobr>网站地址： </nobr></th>
+						<td><input class="form-control" type="text" id="url"
+							name="url"></td>
+					</tr>
+					<tr>
+						<th><nobr>Logo上传：</nobr></th>
+						<td>
+							<div
+								style="float: left; padding-right: 30px; padding-left: 25px;">
+								<input type="hidden" id="logo" name="logo" /> <img
+									id="headimgsrc" src="" style="width: 150px; height: 100px;"
+									class="img-thumbnail col-12">
+							</div>
+							<div style="float: left; padding-top: 50px;">
+								<a class="btn btn-sm btn-primary"
+									style="height: 35px; width: 120px; display: block; position: relative;"
+									href="javascript:void(0);">上传网站LOGO <input
+									style="opacity: 0; position: absolute; top: 5px; display: block; cursor: pointer;"
+									id="uploadfile" name="uploadfile" type="file"></a>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th><nobr>排序： </nobr></th>
+						<td><input class="form-control" type="text" id="sort"
+							name="sort" placeholder="正整数数字,值越大优先级越高!"></td>
+					</tr>
+
+				</tbody>
+			</table>
+
+
+
+		</div>
+	</div>
+</form>
+<!-- /.main-container -->
+</#escape>

@@ -1,0 +1,65 @@
+<#import "/userpage/${userAccount}/${siteId}/common/common.html" as cmMacro />  
+<#assign mctx='${ctx}/userstatic/common' />
+ <@cmMacro.head title='首页'/>
+		<style type="text/css">
+			body{background: url(${mctx}/images/bg.jpg) no-repeat;}
+		</style>
+
+	<body>
+		<@cmMacro.top/>
+		<@cmMacro.navigator channelSort='shouye'/>
+				<div class="flexslider">
+			  		<ul class="slides clear-fix">
+			    		<li><img src="${mctx}/images/flex2.jpg" /></li>
+			    		<li><img src="${mctx}/images/flex3.jpg" /></li>
+			  		</ul>
+		  	   </div>
+		<div class="container mg-t20">
+			<div class="row">
+				<div class="col8">
+					<dl class="connel">
+						<@cms_content_list siteId='${siteId}' ostype='${ostype}' channelName='专栏' pageSize=5 ctx='${ctx}' >
+						<#if content_list??>
+							<dt>${channelName}</dt>
+							<#list content_list as content>
+								<dd><a href="javascript:" onclick="_href('${content.id!''}')">${content.title!''}</a></dd>
+							</#list>
+						</#if>
+					</@cms_content_list>
+					</dl>
+				</div>
+				<div class="col8">
+					<div class="newstw">
+						<img src="${mctx}/images/example1.jpg" width="80%"/>
+						<p><a href="javascript:">我校成功举办2015年毕业生...</a></p>
+					</div>
+				</div>
+				<div class="col8">
+						<dl class="connel">
+					<@cms_content_list siteId='${siteId}' ostype='${ostype}' channelName='动态新闻' pageSize=5 ctx='${ctx}' >
+						<#if content_list??>
+								<dt>${channelName}</dt>
+							<#list content_list as content>
+								<dd><a href="javascript:" onclick="_href('${content.id!''}')">${content.title!''}</a></dd>
+							</#list>
+						</#if>
+					</@cms_content_list>
+						</dl>
+				</div>
+			</div>
+		</div>
+<@cmMacro.foot siteId='${siteId}' ostype='${ostype}' index=1 />	
+<script type="text/javascript">
+$(function() {
+    $(".flexslider").flexslider({
+		slideshowSpeed: 4000, //展示时间间隔ms
+		animationSpeed: 400, //滚动时间ms
+		touch: true,//是否支持触屏滑动
+		animation:"slide" //滑动效果  默认为fadeIn
+	});
+});	
+function _href(id){
+	window.location.href='${ctx}/front/content/contentInfo?cid='+id;
+}
+</script>
+</body>

@@ -1,0 +1,119 @@
+<#escape x as x?html>
+<style type="text/css">
+	select{padding:0 !important;}
+</style>
+<SCRIPT type="text/javascript">
+
+jQuery(document).ready(function(){
+	//回选 下拉框
+	//jQuery("#search_state option[value='是']").prop("selected",true);
+	
+
+	$('.date-picker').datepicker({
+		    autoclose: true,
+		    format: 'yyyy-mm-dd',
+		    language: 'zh-CN'
+		    //,todayBtn: 'linked',
+		    //startDate:new Date(2014,10,27),
+			//endDate:'+60d',
+		    //startDate: '+1d',
+		}).next().on(ace.click_event, function(){
+			$(this).prev().focus();
+		});
+	
+	var courseTypeData = parseInt($('#courseTypeData').val());
+	//1为必修课 , 0 为选修课
+		if(courseTypeData === 1){
+			$('#courseType').find('option[value=1]').attr('selected',true);
+		}else{
+			$('#courseType').find('option[value=0]').attr('selected',true);
+		}	
+	
+	});
+
+</SCRIPT>
+
+
+
+<div class="row">
+	<div class="col-xs-12">
+		<form class="form-horizontal" id="validation-form" method="POST" novalidate="novalidate" action="${ctx}/front/workcoursename/update" > 
+			<input type="hidden" id="id" name="id" value="${(returnDatas.data.id)!''}"/>	
+			<input type="hidden" id="courseTypeData" value="${(returnDatas.data.courseType)!''}"/>	
+<!--input  hidden  End-->
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="courseName" >课程</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="courseName" class="col-xs-12 col-sm-6" id="courseName" value="${(returnDatas.data.courseName)!''}"  type="text" />
+					</div><div class="help-block" for="courseName"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="credit" >学分</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="credit" class="col-xs-12 col-sm-6" id="credit" value="${(returnDatas.data.credit)!''}"  type="text" />
+					</div><div class="help-block" for="credit"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="courseType" >修习类型</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+					<select id="courseType" name="courseType" class="col-xs-6  select-style">
+						<option value="1">必修</option>
+						<option value="0">选修</option>
+					</select>
+					</div><div class="help-block" for="courseType"></div>
+				</div>
+			</div>
+			
+			<div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="schoolItem" >学期:</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+					<select id="schoolItem" name="schoolItem" class="col-xs-6" value="${(returnDatas.data.schoolItem)!''}">
+						<option value="1">第一学期</option>
+						<option value="2">第二学期</option>
+						<option value="3">第三学期</option>
+						<option value="4">第四学期</option>
+						<option value="5">第五学期</option>
+						<option value="6">第六学期</option>
+						<option value="7">第七学期</option>
+						<option value="8">第八学期</option>
+					</select>
+					</div><div class="help-block" for="schoolItem"></div>
+				</div>
+			</div>
+			<div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="majorName" >专业:</label>
+				<input type="hidden" value="${(returnDatas.data.majorName)!''}"/>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input type="checkbox" value="信息管理" name="majorName" id="1"/><label for="1">信息管理</label>
+						<input type="checkbox" value="计算机科学与技术(软件开发方向)" name="majorName" id="2"/><label for="2">计算机科学与技术(软件开发方向)</label>
+					</div>
+					<div class="help-block" for="majorName"></div>
+				</div>
+			</div>
+		</form>
+		<div class="wizard-actions">
+			<button class="btn btn-success btn-info" data-last="Finish" onclick="commonUpdateForm('validation-form','${ctx}/front/workcoursename/list');">
+				保存
+			</button>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+//修改时给学期赋值
+$('#schoolItem').val(${(returnDatas.data.schoolItem)!''});
+//课程类型
+$('#courseType').val(${(returnDatas.data.courseType)!''});
+</script>
+
+</#escape>

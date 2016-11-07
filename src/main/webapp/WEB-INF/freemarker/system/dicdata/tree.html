@@ -1,0 +1,49 @@
+
+
+<SCRIPT type="text/javascript">
+<!--
+
+
+	var dicDataSelectSetting = {
+			callback: {
+				onClick: clickDicDataValue
+			},
+		data : {
+			simpleData : {
+				enable : true,
+				idKey : "id",
+				pIdKey : "pid",
+				rootPId : "null",
+			}
+		}
+	};
+	
+	
+	function clickDicDataValue(event, treeId, treeNode) {
+		jQuery("#pname").val(treeNode.name);
+		jQuery("#pid").val(treeNode.id);
+	    
+	    
+	};
+	
+	
+
+	$(document).ready(function() {
+		jQuery.post("${ctx}/system/dicdata/${returnDatas.data.typekey}/list/json",
+				function(_json) {
+					if (_json.status == "success") {
+						$.fn.zTree.init($("#dicDataTree"), dicDataSelectSetting,_json.data);
+					} else {
+						myalert(_json.message);
+					}
+				});
+	});
+//-->
+</SCRIPT>
+
+
+
+
+<div>
+	<ul id="dicDataTree" class="ztree"></ul>
+</div>

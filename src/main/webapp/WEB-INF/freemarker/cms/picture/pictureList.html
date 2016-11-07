@@ -1,0 +1,343 @@
+<#escape x as x?html>
+<link href="${ctx}/js/select2/select2.css" rel="stylesheet"/> 
+<script type="text/javascript" src="${ctx}/js/coms/ajaxfileupload/ajaxfileupload.js"></script>
+<script type="text/javascript" src="${ctx}/js/select2/select2.min.js"></script>
+<script type="text/javascript" src="${ctx}/js/select2/select2_locale_zh-CN.js"></script>
+<script type="text/javascript" src="${ctx}/js/select2/remote.js"></script>
+
+<script type="text/javascript">
+
+	 $(document).ready(function() {
+		//加载站点
+		ajaxfindsite();
+		//加载站点图片
+		listpic($("#siteId").val()); 
+		
+		//一次事件
+		$('#link_pc').on("keyup", function () {    
+			var linkval=this.value;
+			var oss=new Array("mobile","weixin","app","pad");
+			$(oss).each(function(i,obj){
+				$('#link_'+obj).val(linkval);      
+			});
+		}).one('blur',function(){
+			$('#link_pc').unbind('keyup'); 
+		}); 
+
+		
+		$("#siteId2").on("change", function(e) {
+			var siteId=$(this).select2("val");
+			var listurl='${ctx}/cms/picture/list?siteId='+siteId;
+	 		myhref(listurl); 
+			/* $("#siteId").val(siteId);
+			listpic($("#siteId").val());  */
+			});
+		
+	 	$("#uploadfile").bind('change',ajaxUploadPicture);
+		
+	 	var demo=myValidataForm();
+		demo.addRule([
+			  		  	{
+			  		  		ele:"#siteId2",
+			  		  		datatype:"*",
+			  		  		nullmsg:"请选择站点 !",
+			  		  	},{
+			  		  		ele:"#filepath",
+			  		  		datatype:"*",
+			  		  		nullmsg:"请上传图片!",
+			  		  	}
+			  		  ]);  
+		
+	});
+	 
+	function left_menu_click(){
+		$(".sub_left_menu table tbody tr").click(function() {
+			
+			$(".sub_left_menu table tbody tr.active").removeClass("active");
+			$(this).attr("class", "active"); 
+			var _url=ctx + "/cms/picture/look/json?id="+ $(this).attr("id");
+			jQuery.ajax({
+				url : _url,
+				type : "post",
+				dataType : "json",
+				success : function(_json) {
+					if(_json.status=="success"){
+						showdata(_json.data);    
+					}
+				}
+			});
+			return false;
+		});
+	}
+	
+	function ajaxUploadPicture(){
+		jQuery.ajaxFileUpload({
+			        url: "${ctx}/upload/image?url=/upload/images/", //用于文件上传的服务器端请求地址
+			        secureuri: false, //是否需要安全协议，一般设置为false
+			        fileElementId: 'uploadfile', //文件上传域的ID
+			        dataType: 'json', //返回值类型 一般设置为json
+			        success: function (data, status)  //服务器成功响应处理函数
+			        {
+			      	 jQuery("#filepath").val(data.data); 
+			      	 jQuery("#img").attr("src",ctx+data.data); 
+			      	 $("#uploadfile").bind('change',ajaxUploadPicture); 
+			        },
+			        error: function (data, status, e)//服务器响应失败处理函数
+			        {
+			       	 alert(e);
+			        }
+			    });
+		
+		/* $("#divId").empty();
+		var content='<a class="btn btn-sm btn-primary" style="height: 45px; width: 180px; display: block; position: relative;" href="javascript:void(0);">上传 <input style="opacity: 0; position: absolute; top: 5px; display: block; cursor: pointer;" id="uploadfile" name="uploadfile" type="file" onchange="ajaxUploadPicture();"></a>';
+		$("#divId").append(content);   */ 
+	}
+	
+	function showdata(result) {
+		for (var s in result) {
+			set_val(s, result[s]);
+		}
+		//显示图片
+		jQuery("#img").attr("src",ctx+result.filepath);
+		//显示图片链接
+		$("input[type='checkbox']").attr("checked",false);  
+		 var pictureLinks=result["pictureLinks"]; 
+		 $.each(pictureLinks, function(index, content){  
+			 $("#right_tbody input[type='checkbox']").each(function(i,obj){ 
+				 if(obj.value==content.ostype){
+					 $("#link_"+content.ostype).val(content.link);
+					 $("#opentype_"+content.ostype).val(content.opentype);
+					if(content.state==1){
+					 obj.checked=true;
+					}
+				 }
+			 });		
+		});
+		 hideAllTooltips();  
+		} 
+	
+	function ajaxfindsite(){
+		jQuery.ajax({
+			url : ctx+"/cms/site/list/json",
+			type : "post",
+			dataType : "json",
+			success : function(_json) {
+				if(_json.status=="error"){
+					return;
+				}
+				jQuery("#siteId2").append("<option value=''></option>");
+				jQuery(_json.data).each(function(i,_obj){
+					jQuery("#siteId2").append("<option value='"+_obj.id+"'>"+_obj.name+"</option>");
+				});
+				if($("#siteId").val()!=""){
+					$("#siteId2").val($("#siteId").val());    
+				}
+				$("#siteId2").select2();
+			}
+		});
+	}
+	
+	//切换站点时候清空数据
+	function cleardata(){
+	
+		//左边列表
+		$("#left_tbody").empty(); 
+		//右边列表
+			$("#right_tbody img").each(function(i,obj){
+			$(obj).attr("src","");  
+		});  	
+		$("#updateForm")[0].reset(); 
+	}
+	
+ 	function deletePicture(){
+ 		var id=$("#id").val();
+ 		if(id!=null){
+ 			jQuery.post('${ctx}/cms/picture/delete?id='+id,
+ 					function(_json) {
+ 						if (_json.status == "success") {
+ 							myalert(_json.message, function() {
+ 								 var siteId=$("#siteId2").val();
+ 						 		 var listurl='${ctx}/cms/picture/list?siteId='+siteId;
+ 						 			myhref(listurl); 
+ 							});
+ 						} else {
+ 							myalert(_json.message);
+ 						}
+ 					});
+ 		} 
+	}
+ 	
+ 	function updatePicture(){ 
+ 		checkEle();
+ 		if(checkEle()==false){
+ 			return false;
+ 		}
+ 		var siteId=$("#siteId2").val();
+ 		$("#siteId").val(siteId);  
+ 		validateSubmit("updateForm",'${ctx}/cms/picture/list?siteId='+siteId); 
+}
+ 	//
+ 	function checkEle(){
+ 		var siteId=$("#siteId2").val();
+ 		jQuery("#siteId2").before("<span class='span_validate'></span>");
+		var objtip=jQuery("#siteId2").siblings(".span_validate");
+		var msg='不能为空!';
+		
+			if(siteId==''||siteId=='undefined'||siteId==' '){
+	 			hideTooltips(objtip);
+				showTooltips(objtip,msg);
+				return false;
+	 		}else{
+	 			hideTooltips(objtip);
+	 		}
+ 		}
+ 	
+ 	
+	function listpic(siteId){
+		if(siteId!=""&&siteId!=null){
+		jQuery.post("${ctx}/cms/picture/list/pic?siteId="+siteId, 
+				function(_json) {
+					if (_json.status == "success") {
+						cleardata(); 
+						$(_json.data).each(function(i,obj){
+							$("#left_tbody").append("<tr id="+obj.id+"><td><div style='width: 180px; height: 180px;'><img style='width: 100%; height: 100%' class='img-thumbnail col-12' src=' "+ctx+obj.filepath+" '></div></td></tr>");
+						});
+							left_menu_click();
+					} else {
+						myalert(_json.message);
+					}
+					});
+		}
+	} 
+	
+	 function refresh(){
+		var siteId=$("#siteId").val();
+		if(siteId!=null){
+		var url='${ctx}/cms/picture/list?siteId='+siteId;
+		myhref(url);
+		}else{
+			return false;
+		}
+	} 
+</script>
+	
+	
+	<div class="operate panel panel-default" style="height:65px;" >
+	
+		<div class="pull-left">
+		<br/>
+						<label for="search_state"><b>
+</b></label> 
+                          <select  id="siteId2" name="siteId2" style="width:200px;" onchange="checkEle()"></select>			
+		</div>
+	
+		<div class="panel-body">
+			<div class="pull-right">
+			
+			  <div style="float:left;margin-right: 100px;">
+				<button onclick="refresh();"
+					class="btn  btn-sm  btn-primary">
+					<i class="ace-icon glyphicon glyphicon-plus"></i>新增
+				</button>
+			</div>
+			
+			<div style="float:left;margin-right: 100px;">
+				<button onclick="updatePicture();"
+					class="btn  btn-sm  btn-success">
+					<i class="ace-icon fa fa-floppy-o bigger-130"></i>保存
+				</button>
+			</div>
+			  <div style="float:left;margin-right: 30px;">
+				<button onclick="deletePicture();"
+					class="btn  btn-sm  btn-danger">
+					<i class="ace-icon fa fa-trash-o bigger-130"></i>删除
+				</button>
+			</div>
+
+			</div>
+		</div>
+	</div>
+	
+	
+	<!-- 功能操作区域结束 -->
+<!-- 列表显示区域  -->
+<div class="row">
+	<div class="col-sm-4 sub_left_menu ">
+		<table class="table table-bordered"  style="width: 180px; height: 180px;">
+						<thead>
+							<tr>
+								<th>图片列表</th>
+							</tr>
+						</thead>
+						<tbody id="left_tbody">
+						</tbody>
+					</table>
+	</div>
+		
+	<div class="col-sm-8">
+		<form class="form-horizontal" method="post"  action="${ctx}/cms/picture/update"  name="updateForm" id="updateForm">
+			<input type="hidden" name="siteId" id="siteId" value="${(returnDatas.queryBean.siteId)!''}">
+			<input name="ost1" id="ost_pc" type="hidden" value="pc" />
+			<input name="ost2" id="ost_pad" type="hidden" value="pad" />
+			<input name="ost3" id="ost_weixin" type="hidden" value="weixin" />
+			<input name="ost4" id="ost_mobile" type="hidden" value="mobile" />
+			<input name="ost5" id="ost_app" type="hidden" value="app" />			
+			
+			<table id="right_table" class="table table-bordered">
+			  	<tbody id="right_tbody">
+								<tr>
+									<td>图片</td>
+									<td>URL</td>
+									<td>跳转方式</td>
+									<td>平台</td>
+								</tr>								
+								<@myline/>								
+							</tbody>
+			</table>
+			
+			
+		</form>
+	</div>
+</div>
+<!-- /.main-container -->
+
+<#macro myline >
+      <#assign listos=['pc','pad','weixin','mobile','app'] />
+      <#list listos as os>
+      <tr>
+            <#if os_index==0>
+            			<td rowspan="${(listos?size)!0}">
+									<div style="width: 180px; height: 180px;">
+									<input type="hidden" name="id" id="id">				
+									<input type="hidden" id="filepath" name="filepath"> 
+										<img style="width: 100%; height: 100%" id="img" class="img-thumbnail col-12">
+									</div>
+									<a id="aid" class="btn btn-sm btn-primary" style="height: 45px; width: 180px; display: block; position: relative;" href="javascript:void(0);">
+									上传 
+									<input style="opacity: 0; position: absolute; top: 5px; display: block; cursor: pointer;" id="uploadfile" name="uploadfile" type="file">
+									</a> 
+
+						</td>
+            </#if>
+            
+                 <#assign osindex="${os_index+1}" />
+                   <td rowspan="1">
+					<input type="text" class="form-control" name="link${osindex}" id="link_${os}">
+					</td>
+					<td rowspan="1">
+					<select  id="opentype_${os}" name="opentype${osindex}">
+							<option value="_self"  selected="selected">当前窗体打开</option>
+							<option value="_blank">新窗口打开</option>
+							<option value="_parent">父窗体打开</option>
+							<option value="_top">当前窗体打开并替换整个窗体</option>
+					</select></td>
+					<td rowspan="1">
+					<input name="ostype${osindex}" id="ostype_${os}" type="checkbox" value="${os}" checked="checked"/>${os}
+				</td>
+				
+          </tr>
+      </#list>
+</#macro>
+
+
+</#escape>

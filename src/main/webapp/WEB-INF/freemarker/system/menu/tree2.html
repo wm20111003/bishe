@@ -1,0 +1,56 @@
+
+
+<SCRIPT type="text/javascript">
+<!--
+
+
+	var menuMultiSelectSetting = {
+		expandAll:true,
+		check: {
+			enable: true,
+			chkStyle: "checkbox",
+			//chkboxType:  { "Y" : "", "N" : "" }
+			chkboxType: { "Y" : "ps", "N" : "ps" }
+		},
+		data : {
+			simpleData : {
+				enable : true,
+				idKey : "id",
+				pIdKey : "pid",
+				rootPId : "null"
+			}
+		}
+	};
+	
+	
+	
+	
+	
+
+	$(document).ready(function() {
+		jQuery.post("${ctx}/system/menu/list/json",
+				function(_json) {
+					if (_json.status == "success") {
+						$.fn.zTree.init($("#menuMultiSelectTree"), menuMultiSelectSetting,_json.data);
+						//var zTree =$.fn.zTree.getZTreeObj("menuMultiSelectTree");
+						//zTree.expandAll(true);
+						checkedZtreeNodes(jQuery("#menuIds").val(),"menuMultiSelectTree");
+					} else {
+						myalert(_json.message);
+					}
+				});
+	});
+
+	
+
+	
+	
+//-->
+</SCRIPT>
+
+
+
+
+<div>
+	<ul id="menuMultiSelectTree" class="ztree"></ul>
+</div>

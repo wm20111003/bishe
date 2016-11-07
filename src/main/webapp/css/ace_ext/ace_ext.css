@@ -1,0 +1,45 @@
+.ace_ext{
+	cursor: pointer;
+	border:1px solid #fff;
+}
+.ace_ext:hover{
+	border:1px solid gray;
+}
+.ace_ext_slide_icon{
+	background-size:20px;
+	width:20px;
+	height:20px;
+	display:inline-block;
+	vertical-align:middle;
+	margin-right:10px;
+}
+.icon_default{
+	background:url(../../images/ace_ext/ico_05.png) no-repeat;
+}
+.icon_01{
+	background:url(../../images/ace_ext/ico_01.png) no-repeat;
+}
+.icon_02{
+	background:url(../../images/ace_ext/ico_02.png) no-repeat;
+}
+.icon_03{
+	background:url(../../images/ace_ext/ico_03.png) no-repeat;
+}
+.icon_04{
+	background:url(../../images/ace_ext/ico_04.png) no-repeat;
+}
+.icon_05{
+	background:url(../../images/ace_ext/ico_05.png) no-repeat;
+}
+.icon_06{
+	background:url(../../images/ace_ext/ico_06.png) no-repeat;
+}
+.icon_07{
+	background:url(../../images/ace_ext/ico_07.png) no-repeat;
+}
+.icon_08{
+	background:url(../../images/ace_ext/ico_08.png) no-repeat;
+}
+.icon_09{
+	background:url(../../images/ace_ext/ico_09.png) no-repeat;
+}

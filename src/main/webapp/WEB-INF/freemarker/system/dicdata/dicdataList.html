@@ -1,0 +1,156 @@
+
+<!--  
+<script type="text/javascript" src="${ctx}/js/system/dicdata/dicdata.js"></script>
+-->
+
+
+<SCRIPT type="text/javascript">
+<!--
+	var dicDataTreesetting = {
+		callback: {
+			onClick: dicDatazTreeOnClick
+		},
+		data : {
+			simpleData : {
+				enable : true,
+				idKey : "id",
+				pIdKey : "pid",
+				rootPId : "null"
+			}
+		}
+	};
+
+	$(document).ready(function() {
+		
+		jQuery.post("${ctx}/system/dicdata/${returnDatas.map.typekey}/list/json",
+				function(_json) {
+					if (_json.status == "success") {
+						
+						$.fn.zTree.init($("#dicDataListTree"), dicDataTreesetting,_json.data);
+					} else {
+						myalert(_json.message);
+					}
+				});
+		
+	});
+	
+	function dicDatazTreeOnClick(event, treeId, treeNode) {
+	    showdata(treeNode);
+	};
+	
+	function showdata(result) {
+		$("#updateForm select ").each(function() {
+			$(this).find('option:first').attr('selected', 'selected');
+		});
+		for (var s in result) {
+			set_val(s, result[s]);
+		}
+		var _pid=result["pid"];
+		if((!_pid)||_pid==null||_pid=="null"||_pid==""){
+			jQuery("#pid").val("");
+		}else{
+			jQuery("#pid").val(_pid);
+		}
+	}
+	
+	
+	function deletedicData(){
+		var id=jQuery("#id").val();
+		if(!id||id==""){
+			myalert("请选择你要删除的记录");
+			return;
+		}else{
+			var _url="${ctx}/system/dicdata/${returnDatas.map.typekey}/delete?id="+id;
+			var listurl="${ctx}/system/dicdata/${returnDatas.map.typekey}/list";
+			mydelete(_url,listurl);
+		}
+	}
+	
+	
+	
+	
+		
+		
+	
+	
+//-->
+</SCRIPT>
+
+<input type="hidden" name="typekey" id="typekey" value="${returnDatas.map.typekey}" />
+
+	<div class="operate panel panel-default" style="height:65px;" style="height:60px;">
+		<div class="panel-body">
+			<div class="pull-right">
+				<a onclick="commonSaveForm('updateForm','${ctx}/system/dicdata/${returnDatas.map.typekey}/list');" class="btn btn-sm btn-primary">添加</a>
+				<a onclick="commonUpdateForm('updateForm','${ctx}/system/dicdata/${returnDatas.map.typekey}/list');" class="btn btn-sm btn-primary">修改</a>
+				|
+				<a onclick="deletedicData();"  class="btn btn-sm btn-danger">删除</a>
+			</div>
+		</div>
+	</div>
+	
+	
+	<!-- 功能操作区域结束 -->
+<!-- 列表显示区域  -->
+<div class="row">
+	<div class="col-sm-4 sub_left_menu ">
+		<div class="well">
+			<ul id="dicDataListTree" class="ztree"></ul>
+		</div>
+	</div>
+	<div class="col-sm-8 sub_content">
+		<form id="updateForm" name="updateForm" method="post" action="${ctx}/system/dicdata/${returnDatas.map.typekey}/update" class="well form-horizontal clearfix">
+			<input type="hidden" name="id" id="id">
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="code">编码*：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" id="code" name="code" >
+				</div>
+			</div>
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="name">名称*：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" id="name" name="name">
+				</div>
+			</div>
+			
+
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="dept_name">父节点*：</label>
+				<div class="col-sm-8">
+					<div class="input-group">
+						<input name="pname" class="form-control" id="pname" type="text" readonly="readonly"/>
+						<input name="pid" id="pid" type="hidden"/>
+						<div class="input-group-btn">
+												<a data-trigger="modal" href="${ctx}/system/dicdata/${returnDatas.map.typekey}/tree" data-title="字典" class="btn btn-sm btn-primary">
+													<i class="fa fa-search"></i>
+												</a>
+											</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="sort">排序：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" id="sort" name="sort" >
+				</div>
+			</div>
+
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="state">是否可用*：</label>
+				<div class="col-sm-8">
+					<select   name="state" id="state" class="form-control">
+						<option  value="是">是</option>
+						<option value="否">否</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="remark" >描述：</label>
+				<div class="col-sm-8" >
+					<textarea class="form-control" name="remark" id="remark" rows="5" class="col-xs-12" ></textarea>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

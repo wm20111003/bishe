@@ -1,0 +1,230 @@
+
+
+
+
+<script type="text/javascript">
+
+
+jQuery(document).ready(function(){
+	$(".sub_left_menu tbody tr").click(function() {
+		$(".sub_left_menu tbody tr.active").removeClass("active");
+		$(this).attr("class", "active");
+		var _url=ctx + "/system/role/look/json?id="+ $(this).attr("id");
+	
+		jQuery.ajax({
+			url : _url,
+			type : "post",
+			dataType : "json",
+			success : function(_json) {
+				if(_json.status=="success"){
+					showdata(_json);
+				}
+			}
+		});
+		return false;
+	})
+});
+
+function showdata(result) {
+
+	for (var s in result.data) {
+		set_val(s, result.data[s]);
+	}
+	
+	var menuNames="";
+	var menuIds="";
+	
+	jQuery(result.data.menus).each(function(i,obj){
+		menuNames=menuNames+obj.name+",";
+		menuIds=menuIds+obj.id+",";
+	});
+	jQuery("#menuNames").val(menuNames);
+	jQuery("#menuIds").val(menuIds);
+	
+	
+	
+}
+
+
+
+
+function deleteRole(){
+	var id=jQuery("#id").val();
+	if(!id||id==""){
+		myalert("请选择你要删除的记录");
+		return;
+	}else{
+		var _url="${ctx}/system/role/delete?id="+id;
+		//mydelete(_url,'#updateForm');
+		myconfirm("确定删除数据?", function() {
+			$.ajax({
+				url:_url,
+				data:'',
+				type:'post',
+				dataType:'json',
+				success:function(_data){
+					if(_data.status == 'success'){
+						myalert("数据删除成功!",function(){
+							myhref('${ctx}/system/role/list');
+						});
+					}else{
+						myalert("请先关闭此用户所有的权限!");
+					}
+				}
+			})
+		});
+	}
+}
+
+
+var menuModal = $.scojs_modal({
+	  title:"选择菜单",
+	  target:"#modal",
+	  cache:true,
+	  remote: "${ctx}/system/menu/tree/pre"
+	  ,uuid:"menuMultiSelectTree"
+	  ,fun_confirm:"selectZtreeMenu"
+	});
+
+function showMenuModal(){
+	
+	menuModal.show();
+	
+	
+	
+	
+}
+
+function selectZtreeMenu(uuid){
+	var zTree =$.fn.zTree.getZTreeObj(uuid);
+	
+	var nodes = zTree.getCheckedNodes(true);
+	
+	var menuNames="";
+	var menuIds="";
+	
+	jQuery(nodes).each(function(i,obj){
+		menuNames=menuNames+obj.name+",";
+		menuIds=menuIds+obj.id+",";
+	});
+	jQuery("#menuNames").val(menuNames);
+	jQuery("#menuIds").val(menuIds);
+	
+	menuModal.close();
+}
+
+
+
+
+
+//-->
+</script>
+
+
+
+<form class="form-horizontal" method="post"  action="${ctx}/system/role/list"  name="searchForm" id="searchForm">
+<input type="hidden" name="pageIndex" id="pageIndex" value="${(returnDatas.page.pageIndex)!'1'}" />
+<input type="hidden" name="sort" id="page_sort" value="${(returnDatas.page.sort)!'desc'}"  />
+<input type="hidden" name="order" id="page_order" value="${(returnDatas.page.order)!'id'}"  />
+</form>
+
+
+	<div class="operate panel panel-default" style="height:65px;" >
+		<div class="panel-body">
+			<div class="pull-right">
+			 <@shiro.hasPermission
+			name="/system/role/update" >
+			<button onclick="commonSaveForm('updateForm','${ctx}/system/role/list');"
+				class="btn  btn-sm  btn-primary">
+				添加
+			</button>
+				<button onclick="commonUpdateForm('updateForm','${ctx}/system/role/list');"
+				class="btn  btn-sm  btn-primary">
+				修改
+			</button>
+			
+			</@shiro.hasPermission>
+			 <@shiro.hasPermission name="/system/role/delete" >
+			<a onclick="deleteRole();"  class="btn btn-sm btn-danger">删除</a>
+			</@shiro.hasPermission>
+		</div>
+	</div>
+</div>
+<!-- 功能操作区域结束 -->
+<!-- 列表显示区域  -->
+<div class="row">
+	<div class="col-sm-4 sub_left_menu ">
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>名称</th>
+					<th>是否可用</th>
+				</tr>
+			</thead>
+			<tbody>
+			
+			   <#if (returnDatas.data??)&&(returnDatas.data?size>0)>
+			   
+					   <#list returnDatas.data as _data>
+
+							<tr id="${(_data.id)!''}">
+								<td>${(_data.name)!''}</td>
+								<td>${(_data.state)!''}</td>
+							</tr>
+                         </#list>
+					 </#if>
+			
+			
+				
+				
+				
+				
+			</tbody>
+		</table>
+	</div>
+	<div class="col-sm-8 last sub_content">
+		<form id="updateForm" name="updateForm"  action="${ctx}/system/role/update"    method="post" class="well form-horizontal clearfix">
+			<input type="hidden" name="id" id="id">
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="name">名称*：</label>
+				<div class="col-sm-8">
+					<input class="form-control"  type="text" id="name" name="name" msg="请输入名称">
+				</div>
+			</div>
+			
+		  <div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="pid">权限菜单：</label>
+				<div class="col-sm-8">
+					<div class="input-group">
+						<input name="menuNames" class="form-control val" id="menuNames" type="text"  readonly="readonly"/>
+						<input name="menuIds"  id="menuIds" type="hidden"  />
+						<span class="input-group-btn">
+								<a onclick="showMenuModal();" class="btn btn-sm btn-primary">
+															<i class="fa fa-search"></i>
+								</a>
+						 </span>
+					</div>
+				</div>
+			</div>
+
+	
+
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="is_del">是否可用</label>
+				<div class="col-sm-8">
+					<select  class="form-control" name="state" id="state">
+						<option  value="是">是</option>
+						<option value="否">否</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group col-xs-12">
+				<label class="col-sm-4 control-label" for="remark" >备注：</label>
+				<div class="col-sm-8" >
+					<textarea class="form-control" name="remark" id="remark" rows="5" class="col-xs-12" ></textarea>
+				</div>
+			</div>
+		</form>
+	</div>
+		<#if returnDatas.page??> <@h.pagetoolbar page=returnDatas.page formId='searchForm' /> </#if>
+</div>

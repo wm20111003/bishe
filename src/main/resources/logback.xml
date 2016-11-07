@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration >
+	<property name="AppName" value="centfor" />
+	<!-- 控制台日志 -->
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${AppName} %d %-5p [%thread] %c:%L - %m%n</pattern>
+		</encoder>
+	</appender>
+	<!-- 错误日志 -->
+	<appender name="errorFile"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>/data/tomcat/logs/error/zzt</File>
+		<encoder>
+			<pattern>%d [%thread] %c:%L-%m%n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>/data/tomcat/logs/error/zzt_%d{yyyy-MM-dd}</fileNamePattern>
+		</rollingPolicy>
+		<!-- 日志过滤器 -->
+		<!-- <filter class="ch.qos.logback.classic.filter.LevelFilter"> <level>DEBUG</level> 
+			<onMatch>ACCEPT</onMatch> <onMismatch>DENY</onMismatch> </filter> -->
+	</appender>
+	<!-- 数据库访问较慢的语句 -->
+	<appender name="sqlFile"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>/data/tomcat/logs/sql/zzt</File>
+		<encoder>
+			<pattern>%d [%thread] %c:%L-%m%n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>/data/tomcat/logs/sql/zzt_%d{yyyy-MM-dd}</fileNamePattern>
+		</rollingPolicy>
+	</appender>
+	<logger name="com.alibaba.druid.filter.stat.StatFilter" additivity="false" level="ERROR">
+		<appender-ref ref="sqlFile" />
+	</logger>
+	
+	<logger name="com.centfor" level="DEBUG" />
+	
+	<root level="ERROR">
+		<appender-ref ref="stdout" />
+		<appender-ref ref="errorFile" />
+	</root>
+</configuration>

@@ -1,0 +1,183 @@
+<#import "/common/theme.html" as themeMacro />
+<#escape x as x?html>
+<script type="text/javascript" src="${ctx}/js/coms/ajaxfileupload/ajaxfileupload.js"></script>
+
+<SCRIPT type="text/javascript">
+jQuery(document).ready(function(){
+	var demo=myValidataForm();
+	demo.addRule([
+	        {
+				ele:"#themeGroupName",
+				datatype:"*",
+				nullmsg:"请填写主题名称! "
+		    },
+  		  	{
+  		  		ele:"#title",
+  		  		datatype:"*",
+  		  		nullmsg:"请填写栏目标题!"
+  		  	}
+	]);
+	//栏目主题默认
+	$("#li_pc_").attr("class","active");
+	$("#div_pc_").attr("class","tab-pane active");
+	
+	$("#li_pc_site_").attr("class","active");
+	$("#div_pc_site_").attr("class","tab-pane active");
+	
+	$(".sub_left_menu tbody tr").click(function() {
+		$(".sub_left_menu tbody tr.active").removeClass("active");
+		$(this).attr("class", "active");
+		var _url=ctx + "/cms/themeGroup/look/json?id="+ $(this).attr("id");
+		jQuery.ajax({
+			url : _url,
+			type : "post",
+			dataType : "json",
+			success : function(_json) {
+				if(_json.status=="success"){
+					showdata(_json);
+				}
+			}
+		});
+		return false;
+	})
+
+});
+function showdata(result) {
+	if(result==null||result.data==null){
+		return false;
+	}
+	$("#themeGroupName").val(result.data['themeGroupName']);
+	$("#id").val(result.data['themeGroupId']); 
+	if(result.data['listThemeId']!=null){
+		var listThemeId=result.data['listThemeId'];
+		$("input:radio").each(function(i,obj){
+			if(listThemeId.indexOf(obj.value)!=-1){
+				obj.checked=true;
+			}else{
+				obj.checked=false;  
+			}
+		});
+	}
+	hideAllTooltips(); 
+}
+
+</SCRIPT>
+
+		
+
+<div class="operate panel panel-default" style="height:65px;">
+	<div class="panel-body">
+		<div class="pull-left">
+<form  class="form-horizontal" method="post"  action="${ctx}/cms/themeGroup/list"  name="searchForm"  id="searchForm">
+	<input type="hidden" name="pageIndex" id="pageIndex" value="${(returnDatas.page.pageIndex)!'1'}" />
+<input type="hidden" name="sort" id="page_sort" value="${(returnDatas.page.sort)!'desc'}"  />
+<input type="hidden" name="order" id="page_order" value="${(returnDatas.page.order)!'id'}"  />
+			<label for="search_state"><b>是否可用:</b></label> 
+			<input type="hidden" id="hid_state" value="${(returnDatas.queryBean.state)!''}"/>
+			 <select id="search_state" name="state" class="col-10" >
+				<option value="1">是</option>
+				<option value="0">否</option>
+			</select>
+			<label for="search_state"><b>主题名称:</b></label> 
+			<input type="text" name="name" id="name" value="${(returnDatas.queryBean.name)!''}"/>
+			<input type="text" style='display:none' />
+			<a  href="javascript:mySubmitForm('searchForm');"
+				class="btn btn-purple btn-sm">
+					查询 <i class="ace-icon fa fa-search icon-on-right bigger-10"></i>
+				</a>
+
+</form>
+		</div>
+		<div class="pull-right">		
+			 <@shiro.hasPermission name="/cms/themeGroup/update" >
+			<!-- <button onclick="validateSubmit('updateForm','${ctx}/cms/themeGroup/list');"
+				class="btn  btn-sm  btn-primary">
+				保存
+			</button>
+			
+			<button onclick="validateSubmit('updateForm','${ctx}/cms/themeGroup/list');"
+				class="btn  btn-sm  btn-primary">
+				修改
+			</button> -->
+			 <div style="float:left;margin-right: 100px;">
+				<button onclick="myhref('${ctx}/cms/themeGroup/list')"
+					class="btn  btn-sm  btn-primary">
+					<i class="ace-icon glyphicon glyphicon-plus"></i>新增
+				</button>
+			</div>
+			
+			<div style="float:left;margin-right: 30px;">
+				<button onclick="validateSubmit('updateForm','${ctx}/cms/themeGroup/list')"
+					class="btn  btn-sm  btn-success">
+					<i class="ace-icon fa fa-floppy-o bigger-130"></i>保存
+				</button>
+			</div>
+			</@shiro.hasPermission>
+		</div>
+	</div>
+</div>
+
+
+<!-- /.page-header -->
+
+
+
+<div class="row">
+	<div class="col-xs-12">
+
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="col-sm-4 sub_left_menu ">
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>主题名称</th>
+							</tr>
+						</thead>
+						<tbody>
+						
+				    <#if (returnDatas.data??)&&(returnDatas.data?size>0)>
+					   <#list returnDatas.data as _data>
+
+							<tr id="${(_data.id)!''}">
+								<td>${(_data.name)!''}</td>
+							</tr>
+                         </#list>
+					 </#if>
+						</tbody>
+					</table>
+				</div>
+
+
+				<div class="col-sm-8">
+				
+					<form  class="form-horizontal" method="post"  action="${ctx}/cms/themeGroup/update"  name="updateForm" id="updateForm">
+						  <p>主题名称： <input type="text" class="form-control" 
+										name="name" id="themeGroupName"  placeholder="必填"  /> 
+										<input type="hidden"  name="id"  id="id"/>
+						  </p>
+						  <p>选择模板：</p>
+                          <@themeMacro.zhutitab rm='y' />
+
+					</form>
+
+				</div>
+
+
+
+			</div>
+			<!-- /.span -->
+
+		</div>
+
+		<#if returnDatas.page??> <@h.pagetoolbar page=returnDatas.page
+		formId='searchForm' /> </#if>
+
+	</div>
+</div>
+
+
+<!-- /.main-container -->
+
+
+</#escape>

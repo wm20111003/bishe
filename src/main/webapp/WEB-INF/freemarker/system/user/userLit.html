@@ -1,0 +1,444 @@
+<#escape x as x?html>
+<script type="text/javascript" src="${ctx}/js/system/dicdata/ajaxdicdata.js"></script>
+<script type="text/javascript" src="${ctx}/js/coms/ajaxfileupload/ajaxfileupload.js"></script>
+
+<SCRIPT type="text/javascript">
+<!--
+
+jQuery(document).ready(function(){
+	if($("#hid_state").val()!=""){
+		$("#state").val($("#hid_state").val());
+	}
+	
+	jQuery("#uploadimgfile").change(ajaxUploadPicture);
+	
+	
+	/*
+	$('#roleIds').chosen({allow_single_deselect:true}); 
+	$(window).on('resize.chosen', function() {
+		var w = $('.chosen-select').parent().width();
+		$('.chosen-select').next().css({'width':w});
+	}).trigger('resize.chosen');
+	*/
+	
+	//加载级别
+	ajaxDicData("grade","gradeId","","id");
+	
+	//加载角色
+	/*
+		jQuery.ajax({
+			url : ctx+"/system/role/list/json",
+			type : "post",
+			dataType : "json",
+			success : function(_json) {
+				if(_json.status=="error"){
+					return;
+				}
+				
+				jQuery(_json.data).each(function(i,_obj){
+					jQuery("#roleIds").append("<option value='"+_obj.id+"'>"+_obj.name+"</option>");
+				});
+				
+				jQuery("#roleIds").trigger("chosen:updated");  
+				
+			}
+		});
+	*/
+	
+	
+	
+	$('.date-picker').datepicker({
+	    autoclose: true,
+	    format: 'yyyy-mm-dd',
+	    language: 'zh-CN',
+	    //todayBtn: 'linked',
+	    //startDate:new Date(2014,10,27),
+		//endDate:'+60d',
+	    startDate: '+1d',
+	}).next().on(ace.click_event, function(){
+		$(this).prev().focus();
+	});
+	
+	
+
+
+	
+	
+	
+	
+	
+	//回选 下拉框
+	jQuery("#search_state option[value='${(returnDatas.queryBean.state)!'是'}']").attr("selected",true);
+	
+	$(".sub_left_menu tbody tr").click(function() {
+		$(".sub_left_menu tbody tr.active").removeClass("active");
+		$(this).attr("class", "active");
+		var _url=ctx + "/system/user/look/json?id="+ $(this).attr("id");
+	
+		jQuery.ajax({
+			url : _url,
+			type : "post",
+			dataType : "json",
+			success : function(_json) {
+				if(_json.status=="success"){
+					showdata(_json);
+				}
+			}
+		});
+		return false;
+	})
+});
+
+
+
+/*
+var user_org_modal=null;
+function showOrgModal(){
+	if(user_org_modal!=null){
+		user_org_modal.show();
+		return;
+	}
+	
+	 user_org_modal=$.scojs_modal({
+		  title: '选择学校',
+		  remote: "${ctx}/system/org/tree/pre",
+		  uuid:"orgCheckBoxTree",
+		  fun_confirm:"selectOrgVal"
+		  
+		});
+	user_org_modal.show();
+
+}
+
+
+
+
+
+function selectOrgVal(uuid){
+
+	  var orgCheckBoxTree = $.fn.zTree.getZTreeObj(uuid);
+	  var nodes = orgCheckBoxTree.getCheckedNodes(true);
+	  if(nodes.length<1){
+		  myalert("请选择一个部门!");
+		  return;
+	  }
+	  var orgNames="";
+	  var orgIds="";
+	  jQuery(nodes).each(function(i,_obj){
+		  orgNames+=_obj.name+",";
+		  orgIds+=_obj.id+",";
+	  });
+	  
+	  jQuery("#orgNames").val(orgNames);
+	  jQuery("#orgIds").val(orgIds);
+	  user_org_modal.close();
+	  
+}
+
+*/
+
+function deleteUser(){
+	var id=jQuery("#id").val();
+	if(!id||id==""){
+		myalert("请选择你要删除的记录");
+		return;
+	}else{
+		var _url="${ctx}/system/user/delete?id="+id;
+		var listurl="${ctx}/system/user/list";
+		mydelete(_url,listurl);
+	}
+}
+
+function showdata(result) {
+	
+	for (var s in result.data) {
+		set_val(s, result.data[s]);
+	}
+	
+	/*
+	  var orgNames="";
+	  var orgIds="";
+	  jQuery(result.data["userOrgs"]).each(function(i,_obj){
+		  orgNames+=_obj.name+",";
+		  orgIds+=_obj.id+",";
+	  });
+	 
+	  jQuery("#orgNames").val(orgNames);
+	  jQuery("#orgIds").val(orgIds);
+	  
+	  */
+	  
+	  
+	  jQuery("#password").val("");
+	  jQuery("#account").val("");
+	 
+	/*
+	  $("#roleIds").find("option:selected").attr("selected",false);
+	  
+	  jQuery(result.data["userRoles"]).each(function(i,_obj){
+			jQuery("#roleIds option[value='"+_obj.id+"']").attr("selected",true);
+	  });
+
+	  jQuery("#roleIds").trigger("chosen:updated");  
+	  */
+	  
+		 jQuery("#headimgsrc").attr("src",ctx+ result.data["headimg"]);
+
+}
+
+
+
+
+
+function ajaxUploadPicture(){
+	
+
+	
+	jQuery.ajaxFileUpload({
+		        url: "${ctx}/upload/img?url=/upload/head/", //用于文件上传的服务器端请求地址
+		        secureuri: false, //是否需要安全协议，一般设置为false
+		        fileElementId: 'uploadimgfile', //文件上传域的ID
+		        dataType: 'json', //返回值类型 一般设置为json
+		        success: function (data, status)  //服务器成功响应处理函数
+		        {
+		        
+		       	 jQuery("#headimgsrc").attr("src",ctx+data.data);
+		      	 jQuery("#headimg").val(data.data);
+
+		    	
+		       	
+		        },
+		        error: function (data, status, e)//服务器响应失败处理函数
+		        {
+		       	 alert(e);
+		        }
+		    });
+}
+
+
+
+
+
+//-->
+</SCRIPT>
+
+
+
+
+
+
+
+<div class="operate panel panel-default" style="height:65px;">
+	<div class="panel-body">
+		<div class="pull-left">
+<form class="form-horizontal" method="post"  action="${ctx}/system/user/listLit"  name="searchForm"  id="searchForm">
+	<input type="hidden" name="pageIndex" id="pageIndex" value="${(returnDatas.page.pageIndex)!'1'}" />
+<input type="hidden" name="sort" id="page_sort" value="${(returnDatas.page.sort)!'desc'}"  />
+<input type="hidden" name="order" id="page_order" value="${(returnDatas.page.order)!'id'}"  />
+			<label for="search_state"><b>是否可用:</b></label> 
+			<input type="hidden" id="hid_state" value="${(returnDatas.queryBean.state)!''}"/>
+			 <select id="search_state" name="state" class="col-10" >
+				<option value="是">是</option>
+				<option value="否">否</option>
+			</select>
+			<label for="search_state"><b>姓名:</b></label> 
+			<input type="text" name="name" id="name" value="${(returnDatas.queryBean.name)!''}"/>
+			<a  href="javascript:mySubmitForm('searchForm');"
+				class="btn btn-purple btn-sm">
+					查询 <i class="ace-icon fa fa-search icon-on-right bigger-10"></i>
+				</a>
+
+</form>
+		</div>
+		<div class="pull-right">
+			<@shiro.hasPermission name="/system/user/updateall/pwd" >
+			<button onclick="export_excel('searchForm');"
+				class="btn  btn-sm  btn-primary">
+				 修改密码
+			</button>
+			</@shiro.hasPermission>
+			
+			 <@shiro.hasPermission
+			name="/system/user/update" >
+			<button onclick="commonSaveForm('updateForm','${ctx}/system/user/list');"
+				class="btn  btn-sm  btn-primary">
+				添加
+			</button>
+				<button onclick="commonUpdateForm('updateForm','${ctx}/system/user/list');"
+				class="btn  btn-sm  btn-primary">
+				修改
+			</button>
+			
+			</@shiro.hasPermission>
+			 <@shiro.hasPermission name="/system/user/delete" >
+			<button onclick="deleteUser();" class="btn btn-sm  btn-danger">
+				 删除
+			</button>
+			</@shiro.hasPermission>
+		</div>
+	</div>
+</div>
+
+
+<!-- /.page-header -->
+
+
+
+<div class="row">
+	<div class="col-xs-12">
+
+
+
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="col-sm-4 sub_left_menu ">
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>身份证</th>
+								<th>姓名</th>
+							</tr>
+						</thead>
+						<tbody>
+						
+				    <#if (returnDatas.data??)&&(returnDatas.data?size>0)>
+					   <#list returnDatas.data as _data>
+
+							<tr id="${(_data.id)!''}">
+								<td>${(_data.cardno)!''}</td>
+								<td>${(_data.name)!''}</td>
+							</tr>
+                         </#list>
+					 </#if>
+						</tbody>
+					</table>
+				</div>
+
+
+				<div class="col-sm-8">
+					<form class="form-horizontal" method="post"  action="${ctx}/system/user/update"  name="updateForm" id="updateForm">
+						
+						<input type="hidden" id="id" name="id" value="48"> 
+						<input type="hidden" id="pic" name="pic" value=""> 
+						<table class="table table-bordered">
+							<tbody>
+								<tr>
+									<th><nobr>身份证号* </nobr></th>
+									<td colspan="2"><input type="text" class="form-control"
+										name="cardno" id="cardno"  placeholder="必填,默认为登陆账号"  /> 
+									</td>
+									<td rowspan="4"><input type="hidden" name="headimg"   id="headimg" /> <img id="headimgsrc" src="" width="180px" height="190px"  class="img-thumbnail col-12"></td>
+								</tr>
+								
+								<tr>
+									<th>手机*</th>
+								<td colspan="2"><input type="text" class="form-control"
+										name="mobile" id="mobile"   placeholder="必填,默认为登陆密码" > </td>
+								</tr>
+								<tr>
+									<th>姓名*</th>
+									<td colspan="2"><input type="text"  name="name" id="name" class="form-control">
+									</td>
+								</tr>
+								
+								<tr>
+									<th>姓名*</th>
+									<td colspan="2">
+									</td>
+								</tr>
+				
+								<tr>
+									<th>所属学校</th>
+									<td colspan="2">
+									
+									<!-- 
+										<div class="input-group ">
+											<input type="text" readonly="readonly" id="orgNames" name="orgNames" class="form-control"> 
+										    <input type="hidden"  id="orgIds" name="orgIds" value="">
+											<div class="input-group-btn">
+												<a onclick="showOrgModal();" class="btn btn-sm btn-primary">
+													<i class="fa fa-search"></i>
+												</a>
+											</div>
+										</div>
+										 -->
+										
+									</td>
+									<td colspan="2"><a class="btn btn-sm btn-primary" style="height:45px;width:100px;display:block;position:relative;" href="javascript:void(0);">上传头像
+									  <input style="opacity:0;position:absolute;top:5px;display:block;cursor: pointer;" id="uploadimgfile" name="uploadimgfile"  type="file"></a></td>
+								</tr>
+								<tr>
+									<th>学号</th>
+									<td> <input type="text"  class="form-control" name="workno"  id="workno"  /></td>
+									<th>手机串码(IMEI)</th>
+									<td><input type="text"  class="form-control" readonly="readonly"  name="imei"  id="imei"  /></td>
+								</tr>
+								
+								<tr>
+									<th>账号</th>
+									<td> <input type="text"  name="account" id="account" class="form-control"   placeholder="为空默认为登陆账号"    /></td>
+									
+													<th><nobr> 手机卡串码(IMSI)</nobr></th>
+									<td><input type="text" class="form-control"  readonly="readonly"   name="imsi"  id="imsi" ></td>
+								
+								</tr>
+								
+								
+								<tr>
+									<th><nobr> 密码 </nobr></th>
+									<td> <input type="text"  name="password"  id="password"  class="form-control"  placeholder="为空默认为手机号" /></td>
+					
+										<th>性别</th>
+										<td ><select class="form-control "
+										id="sex" name="sex">
+											<option value="男">男</option>
+											<option value="女">女</option>
+									</select></td>
+								
+								</tr>
+								<tr>
+								</tr>
+								<tr>
+									<th>电子邮箱</th>
+									<td colspan="3"><input type="text" class="form-control"
+										name="email" id="email"></td>
+								</tr>
+								<tr>
+									<th><nobr> 住址 </nobr></th>
+									<td colspan="3"><input type="text" class="form-control"
+										name="address" id="address"></td>
+								</tr>
+								<tr>
+									<th>是否可用</th>
+									<td colspan="3"><select id="state" name="state"
+										class="form-control col-10">
+											<option value="是">是</option>
+											<option value="否">否</option>
+									</select></td>
+								</tr>
+							</tbody>
+						</table>
+					</form>
+
+				</div>
+
+
+
+			</div>
+			<!-- /.span -->
+
+		</div>
+
+		<#if returnDatas.page??> <@h.pagetoolbar page=returnDatas.page
+		formId='searchForm' /> </#if>
+
+	</div>
+</div>
+
+
+<!-- /.main-container -->
+
+
+
+
+</#escape>

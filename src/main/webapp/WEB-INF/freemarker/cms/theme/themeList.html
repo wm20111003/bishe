@@ -1,0 +1,249 @@
+<#escape x as x?html>
+<script type="text/javascript" src="${ctx}/js/coms/ajaxfileupload/ajaxfileupload.js"></script>
+<SCRIPT type="text/javascript">
+jQuery(document).ready(function(){
+	
+	$("#uploadfile").bind('change',ajaxUploadPicture);
+	
+	$(".sub_left_menu tbody tr").click(function() {
+		$(".sub_left_menu tbody tr.active").removeClass("active");
+		$(this).attr("class", "active");
+		var _url=ctx + "/cms/theme/look/json?id="+ $(this).attr("id");
+	
+		jQuery.ajax({
+			url : _url,
+			type : "post",
+			dataType : "json",
+			success : function(_json) {
+				if(_json.status=="success"){
+					showdata(_json);
+				}
+			}
+		});
+		return false;
+	});
+	
+	var demo=myValidataForm();
+	demo.addRule([
+		  		  	{
+		  		  		ele:"#name",
+		  		  		datatype:"*",
+		  		  		nullmsg:"模板名称不能为空 !",
+		  		  		errormsg:"error!"
+		  		  	},{
+		  		  		ele:"#modelType",
+		  		  		datatype:"*",
+		  		  		nullmsg:"请选择模板类型!",
+		  		  	},{
+		  		  		ele:"#ostype",
+		  		  		datatype:"*",
+		  		  		nullmsg:"请选择平台!",
+		  		  	},{
+		  		  		ele:"#ftlfile",
+		  		  		datatype:"*",
+		  		  		nullmsg:"请选择主题!",
+		  		  	}
+		  		  ]);
+});
+
+function showdata(result) {
+	for (var s in result.data) {
+		set_val(s, result.data[s]);
+	}
+	 $("#headimgsrc").attr("src",ctx+ result.data["imgfile"]);
+	 hideAllTooltips();  
+}
+
+function ajaxUploadPicture(){
+	jQuery.ajaxFileUpload({
+		        url: "${ctx}/upload/theme?url=/upload/theme/", //用于文件上传的服务器端请求地址
+		        secureuri: false, //是否需要安全协议，一般设置为false
+		        fileElementId: 'uploadfile', //文件上传域的ID
+		        dataType: 'json', //返回值类型 一般设置为json
+		        success: function (data, status)  //服务器成功响应处理函数
+		        {
+		         //alert("上传成功！");
+		      	 jQuery("#ftlfile").val(data.map.ftlfile);
+		      	 jQuery("#imgfile").val(data.map.imgfile);
+		      	 jQuery("#headimgsrc").attr("src",ctx+data.map.imgfile); 
+		      	 //bind
+		      	 $("#uploadfile").bind('change',ajaxUploadPicture); 
+		        },
+		        error: function (data, status, e)//服务器响应失败处理函数
+		        {
+		       	 alert(e);
+		        }
+		        
+		    });
+}
+/**
+function mysubmit(){
+	validateSubmit("updateForm",'${ctx}/cms/theme/list');
+}
+**/
+
+</SCRIPT>
+
+
+<div class="operate panel panel-default" style="height:65px;">
+	<div class="panel-body">
+		<div class="pull-left">
+<form  class="form-horizontal" method="post"  action="${ctx}/cms/theme/list"  name="searchForm"  id="searchForm">
+	<input type="hidden" name="pageIndex" id="pageIndex" value="${(returnDatas.page.pageIndex)!'1'}" />
+<input type="hidden" name="sort" id="page_sort" value="${(returnDatas.page.sort)!'desc'}"  />
+<input type="hidden" name="order" id="page_order" value="${(returnDatas.page.order)!'id'}"  />
+			<label for="search_state"><b>是否可用:</b></label> 
+			<input type="hidden" id="hid_state" value="${(returnDatas.queryBean.state)!''}"/>
+			 <select id="search_state" name="state" class="col-10" >
+				<option value="1">是</option>
+				<option value="0">否</option>
+			</select>
+			<label for="search_state"><b>模板名称:</b></label> 
+			<input type="text" name="name" id="qname" value="${(returnDatas.queryBean.name)!''}"/>
+			<input type="text" style='display:none' />
+			<a  href="javascript:mySubmitForm('searchForm');"
+				class="btn btn-purple btn-sm">
+					查询 <i class="ace-icon fa fa-search icon-on-right bigger-10"></i>
+				</a>
+
+</form>
+		</div>
+		<div class="pull-right">		
+			 <@shiro.hasPermission name="/cms/theme/update" >
+			 <div style="float:left;margin-right: 100px;">
+				<button onclick="myhref('${ctx}/cms/theme/list')"
+					class="btn  btn-sm  btn-primary">
+					<i class="ace-icon glyphicon glyphicon-plus"></i>新增
+				</button>
+			</div>
+			
+			<div style="float:left;margin-right: 30px;">
+				<button onclick="validateSubmit('updateForm','${ctx}/cms/theme/list')"
+					class="btn  btn-sm  btn-success">
+					<i class="ace-icon fa fa-floppy-o bigger-130"></i>保存
+				</button>
+			</div>
+			</@shiro.hasPermission>
+		</div>
+	</div>
+</div>
+
+
+<!-- /.page-header -->
+
+
+
+<div class="row">
+	<div class="col-xs-12">
+
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="col-sm-4 sub_left_menu ">
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>模板名称</th>
+								<th>模板类型</th>
+								<th>适用平台</th>
+							</tr>
+						</thead>
+						<tbody>
+						
+				    <#if (returnDatas.data??)&&(returnDatas.data?size>0)>
+					   <#list returnDatas.data as _data>
+							<tr id="${(_data.id)!''}">
+								<td>${(_data.name)!''}</td> 
+								<td>${(modelTypeMap[_data.modelType])!''}</td>
+								<td>${(ostypeMap[_data.ostype])!''} </td>
+							</tr>
+                         </#list>
+					 </#if>
+						</tbody>
+					</table>
+				</div>
+
+
+				<div class="col-sm-8">
+					<form  class="form-horizontal" method="post"  action="${ctx}/cms/theme/update"  name="updateForm" id="updateForm">
+						
+
+						<input type="hidden" name="id"  id="id" />
+						<table class="table table-bordered">
+							<tbody>
+								<tr>
+									<th><nobr>模板名称： </nobr></th>
+									<td colspan="2">
+									<input type="text" class="form-control"
+										name="name" id="name"  placeholder="必填,标识主题" datatype="*" /> 
+									</td>
+
+								</tr>
+								
+								<tr>
+									<th>模板类型：</th>
+								<td colspan="2">
+										<select class="form-control" name="modelType" id="modelType">
+										  <option value=""></option>
+										  <option value="site">站点</option>
+										  <option value="channel">栏目</option>
+										  <option value="content">文章</option>
+										</select>
+								</td>
+								</tr>
+								
+								<tr>
+									<th>适用平台：</th>
+									<td colspan="2">
+										<select class="form-control" name="ostype" id="ostype">
+										  <option value=""></option>
+										  <option value="pc">电脑</option>
+										  <option value="pad">pad</option>
+										  <option value="mobile">手机</option>
+										  <option value="weixin">微信</option>
+										</select>
+									</td>
+								</tr>
+								
+								<tr>
+									<th>模板说明</th>
+									<td colspan="2">
+									   <textarea rows="3" cols="80" name="description" id="description"></textarea>
+									</td>
+								</tr>
+				
+								<tr>
+								   <th>模板上传</th>
+								   <td>
+								   <div style="float: left;padding-left:5px;padding-right: 50px;">
+								   <p>预览图：</p>
+								   <img id="headimgsrc" src="" width="220px" height="180px"  class="img-thumbnail col-12">
+								   </div>
+									<div style="float: left;padding-top: 200px;"><a class="btn btn-sm btn-primary" style="height:35px;width:90px;display:block;position:relative;" href="javascript:void(0);"><i class="ace-icon glyphicon glyphicon-upload">上传主题</i>
+									  <input style="opacity:0;position:absolute;top:5px;display:block;cursor: pointer;" id="uploadfile" name="uploadfile"  type="file"></a>
+								   	  <input type="hidden" name="ftlfile"   id="ftlfile" />
+						             <input type="hidden" name="imgfile"   id="imgfile" />
+								    </div>
+								   </td>
+								</tr>
+							</tbody>
+						</table>
+					</form>
+				</div>
+			</div>
+			<!-- /.span -->
+
+		</div>
+
+		<#if returnDatas.page??> <@h.pagetoolbar page=returnDatas.page
+		formId='searchForm' /> </#if>
+
+	</div>
+</div>
+
+
+<!-- /.main-container -->
+
+
+
+
+</#escape>

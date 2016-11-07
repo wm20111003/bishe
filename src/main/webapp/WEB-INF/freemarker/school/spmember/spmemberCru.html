@@ -1,0 +1,257 @@
+<#escape x as x?html>
+<#assign mctx='${ctx}/userstatic/common' />
+<link href="${mctx}/js/webuploader/webuploader.css" rel="stylesheet"/>
+<script type="text/javascript" src="${mctx}/js/webuploader/webuploader.min.js"></script> 
+<script type="text/javascript" src="${mctx}/js/webuploader/imgUploader.js"></script>
+<style type="text/css">
+#fileListS img{border:1px solid #ddd;border-radius:100%;}
+</style>
+<script type="text/javascript">
+
+jQuery(document).ready(function(){
+	$('.date-picker:not("[readonly=readonly]")').datepicker({
+		    autoclose: true,
+		    format: 'yyyy-mm-dd',
+		    language: 'zh-CN'
+		    //,todayBtn: 'linked',
+		    //startDate:new Date(2014,10,27),
+			//endDate:'+60d',
+		    //startDate: '+1d',
+		})
+	});
+	new initWebS('#fileListS','#filePickerS','${ctx}/front/spmember/uploadImg');//初始化上传组件
+</script>
+
+<div class="row">
+	<div class="col-xs-12">
+		<form class="form-horizontal" id="validation-form" method="POST" novalidate="novalidate" action="${ctx}/front/spmember/update" > 
+			<input type="hidden" id="id" name="id" value="${(returnDatas.data.id)!''}"/>
+			<input name="password" class="col-xs-12 col-sm-6" id="password" value="${(returnDatas.data.password)!''}"  type="hidden" />
+			<input name="siteId" class="col-xs-12 col-sm-6" id="siteId" value="${(returnDatas.data.siteId)!''}"  type="hidden" />	
+<!--input  hidden  End-->
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="name" >姓名</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="name" class="col-xs-12 col-sm-6" id="name" value="${(returnDatas.data.name)!''}"  type="text" />
+					</div><div class="help-block" for="name"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="account" >账号</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="account" class="col-xs-12 col-sm-6" id="account" value="${(returnDatas.data.account)!''}"  type="text" />
+					</div><div class="help-block" for="account"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="age" >年龄</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="age" class="col-xs-12 col-sm-6" id="age" value="${(returnDatas.data.age)!''}"  type="text" />
+					</div><div class="help-block" for="age"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="sex" >性别</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="sex" class="col-xs-12 col-sm-6" id="sex" value="${(returnDatas.data.sex)!''}"  type="text" />
+					</div><div class="help-block" for="sex"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="studentId" >学号</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="studentId" class="col-xs-12 col-sm-6" id="studentId" value="${(returnDatas.data.studentId)!''}"  type="text" />
+					</div><div class="help-block" for="studentId"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="mobile" >手机号码</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="mobile" class="col-xs-12 col-sm-6" id="mobile" value="${(returnDatas.data.mobile)!''}"  type="text" />
+					</div><div class="help-block" for="mobile"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="email" >邮箱</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="email" class="col-xs-12 col-sm-6" id="email" value="${(returnDatas.data.email)!''}"  type="text" />
+					</div><div class="help-block" for="email"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="gradeId" >年级</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="gradeId" class="col-xs-12 col-sm-6" id="gradeId" value="${(returnDatas.data.gradeId)!''}"  type="text" />
+					</div><div class="help-block" for="gradeId"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="cardId" >身份证号</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="cardId" class="col-xs-12 col-sm-6" id="cardId" value="${(returnDatas.data.cardId)!''}"  type="text" />
+					</div><div class="help-block" for="cardId"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="state" >是否有效</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+					<select id="search_state" name="state" class="col-xs-6" >
+						<option value="是">是</option>
+						<option value="否">否</option>
+					</select>
+					</div><div class="help-block" for="state"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="headimgsrc" >头像</label>
+				 <div class="col-xs-12 col-sm-9" style="padding-right: 40px;padding-left: 30px;position:relative;">
+						<input type="hidden" id="fileName" name="fileName"/>
+                        <input type="hidden" id="filePath" name="filePath" value="${(returnDatas.data.headimgsrc)!''}"/>
+                    	<div id="fileListS" class="uploader-list">
+                    		<div style="margin:5px 5px 10px 0;"><img src="${ctx}/${(returnDatas.data.headimgsrc)!''}" width="100" height="100"/></div>
+                    	</div>
+                        <div class="imgPick" id="filePickerS">选择图片</div>
+                        <div class="ui-textcolorml " >建议尺寸为225*225像素,大小不超过1M</div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="schoolName" >院校名称</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="schoolName" class="col-xs-12 col-sm-6" id="schoolName" value="${(returnDatas.data.schoolName)!''}"  type="text" />
+					</div><div class="help-block" for="schoolName"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="length" >学制</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="length" class="col-xs-12 col-sm-6" id="length" value="${(returnDatas.data.length)!''}"  type="text" />
+					</div><div class="help-block" for="length"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="testId" >考生号</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="testId" class="col-xs-12 col-sm-6" id="testId" value="${(returnDatas.data.testId)!''}"  type="text" />
+					</div><div class="help-block" for="testId"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+					<!--日期型-->
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="createDate" >注册时间</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+					 <div class="input-group col-xs-12 col-sm-6">
+						<input name="createDate"  class="form-control date-picker"  id="createDate" readonly="readonly" value="${(returnDatas.data.createDate)!''}"  type="text" />
+					        <span class="input-group-addon">
+								<i class="fa fa-calendar bigger-110"></i>
+							</span>
+					   </div>
+					
+					</div><div class="help-block" for="createDate"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="national" >民族</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="national" class="col-xs-12 col-sm-6" id="national" value="${(returnDatas.data.national)!''}"  type="text" />
+					</div><div class="help-block" for="national"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="level" >系</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="level" class="col-xs-12 col-sm-6" id="level" value="${(returnDatas.data.level)!''}"  type="text" />
+					</div><div class="help-block" for="level"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="majorName" >专业名称</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="majorName" class="col-xs-12 col-sm-6" id="majorName" value="${(returnDatas.data.majorName)!''}"  type="text" />
+					</div><div class="help-block" for="majorName"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="education" >学历</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+						<input name="education" class="col-xs-12 col-sm-6" id="education" value="${(returnDatas.data.education)!''}"  type="text" />
+					</div><div class="help-block" for="education"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+					<!--日期型-->
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="birthday" >出生日期</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+					 <div class="input-group col-xs-12 col-sm-6">
+						<input name="birthday"  class="form-control date-picker"  id="birthday"  value="${(returnDatas.data.birthday)!''}"  type="text" />
+					        <span class="input-group-addon">
+								<i class="fa fa-calendar bigger-110"></i>
+							</span>
+					   </div>
+					
+					</div><div class="help-block" for="birthday"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+					<!--日期型-->
+			<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right" for="startDate" >入学日期</label>
+				<div class="col-xs-12 col-sm-9">
+					<div class="clearfix">
+					 <div class="input-group col-xs-12 col-sm-6">
+						<input name="startDate"  class="form-control date-picker"  id="startDate"  value="${(returnDatas.data.startDate)!''}"  type="text" />
+					        <span class="input-group-addon">
+								<i class="fa fa-calendar bigger-110"></i>
+							</span>
+					   </div>
+					
+					</div><div class="help-block" for="startDate"></div>
+				</div>
+			</div>
+	        <div class="space-2"></div>
+		</form>
+		<div class="wizard-actions">
+			<button class="btn btn-success btn-info" data-last="Finish" onclick="commonUpdateForm('validation-form','${ctx}/front/spmember/list');">
+				保存
+			</button>
+		</div>
+	</div>
+</div>
+</#escape>

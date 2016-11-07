@@ -1,0 +1,899 @@
+<#import "/common/upload.html" as uploadMacro/>
+<#import "/common/map.html" as mapMacro/>
+<#import "/common/theme.html" as themeMacro />
+<#import "/common/property.html" as propertyMacro />
+<#escape x as x?html>
+<script type="text/javascript" src="${ctx}/js/system/dicdata/ajaxdicdata.js"></script>
+<link href="${ctx}/js/select2/select2.css" rel="stylesheet"/> 
+<script type="text/javascript" src="${ctx}/js/select2/select2.min.js"></script>
+<script type="text/javascript" src="${ctx}/js/select2/select2_locale_zh-CN.js"></script>
+<script type="text/javascript" src="${ctx}/js/select2/remote.js"></script>
+<link rel="stylesheet" href="${ctx}/js/artDialog/css/ui-dialog.css">
+<script src="${ctx}/js/artDialog/dist/dialog-plus-min.js"></script>    
+<script src="${ctx}/js/cms/property.js"></script>     
+<script src="${ctx}/js/coms/area/jsAddress.js"></script>     
+<script src="${ctx}/js/coms/layer-v1.8.5/layer/layer.min.js"></script>
+<link rel="stylesheet" href="${ctx}/js/coms/layer-v1.8.5/layer/skin/layer.css" />
+<link rel="stylesheet" href="${ctx}/js/coms/layer-v1.8.5/layer/skin/layer.ext.css" />
+
+<script type="text/javascript">
+KindEditor.ready(function(K) {
+	window.editor = K.create('textarea[name="footer"]',{ 
+		//cssPath : '../plugins/code/prettify.css',
+		uploadJson : ctx+'/upload/upload_json', 
+		fileManagerJson :  ctx+'/upload/file_json_manager',
+		allowFileManager : true,
+    	afterBlur:function(){
+    		this.sync(); 
+    	}
+	});  
+	
+});  
+
+jQuery(document).ready(function(){
+    //默认隐藏高级
+    $(".moreconfig").each(function(i,obj){
+    	$(obj).hide();
+    });
+    //省市区级联
+    addressInit('province', 'city', 'area');
+	//打开关闭控制
+	moreconfigControl('tr_tag');
+	
+	var demo=myValidataForm();
+	demo.addRule([
+		  		  	{
+		  		  		ele:"#userId",
+		  		  		datatype:"*",
+		  		  		nullmsg:"请选择用户!"
+		  		  	},{
+		  		  		ele:"#name",
+		  		  		datatype:"*",
+		  		  		nullmsg:"请填写站点名称!"
+		  		  	},{
+		  		  		ele:"#title",
+		  		  		datatype:"*",
+		  		  		nullmsg:"请填写站点标题!"
+		  		  	},{
+		  		  		ele:"#maxAddScore",
+		  		  		datatype:"n",
+		  		  		nullmsg:"请填写分享最大积分!"
+		  		  	},{
+		  		  		ele:"#clickOnceScore",
+		  		  		datatype:"n",
+		  		  		nullmsg:"请填写分享每次点击积分!"
+		  		  	},{
+		  		  		ele:"#footer",
+		  		  		datatype:"*",
+		  		  		nullmsg:"请填写页脚!"
+		  		  	} 
+		  		  ,{
+		  		  		ele:"#contacts",
+		  		  		datatype:"*",
+		  		  		nullmsg:"请填写联系人!"
+		  		  	} 
+		  		  ,{
+		  		  		ele:"#phone",
+		  		  		datatype:"*",
+		  		  		nullmsg:"请填写电话!"
+		  		 },{
+		  		  		ele:"#qq",
+		  		  		datatype:"*",
+		  		  		nullmsg:"请填写QQ!"
+		  		 },/* {
+		  		  		ele:"#logo",
+		  		  		datatype:"*",
+		  		  		nullmsg:"请上传logo!"
+		  		 }, */{
+		  		  		ele:"#themeGroupId",
+		  		  		datatype:"*",
+		  		  		nullmsg:"请选择主题组!"
+		  		},{
+	  		  		ele:"#province",
+	  		  		datatype:"*",
+	  		  		nullmsg:"请选择省!"
+	  		  	},{
+	  		  		ele:"#city",
+	  		  		datatype:"*",
+	  		  		nullmsg:"请选择市!"
+	  		  	},{
+	  		  		ele:"#area",
+	  		  		datatype:"*",
+	  		  		nullmsg:"请选择区!"
+	  		  	},{
+	  		  		ele:"#address",
+	  		  		datatype:"*",
+	  		  		nullmsg:"请选择详细地址!"
+	  		  	}  
+	]);
+	
+	//站点主题默认
+	$("#li_pc_").attr("class","active");
+	$("#div_pc_").attr("class","tab-pane active");
+	
+	$("#li_pc_site_").attr("class","active");
+	$("#div_pc_site_").attr("class","tab-pane active");
+	//下级主题默认
+	$("#li_pc_2").attr("class","active");
+	$("#div_pc_2").attr("class","tab-pane active");
+	
+	$("#li_pc_channel_2").attr("class","active");
+	$("#div_pc_channel_2").attr("class","tab-pane active");
+	ajaxfinduser();
+	$("#themeGroupId").select2();
+	$(".sub_left_menu tbody tr").click(function() {
+		$(".sub_left_menu tbody tr.active").removeClass("active");
+		$(this).attr("class", "active");
+		var _url=ctx + "/cms/site/look/json?id="+ $(this).attr("id");
+	
+		jQuery.ajax({
+			url : _url,
+			type : "post",
+			dataType : "json",
+			success : function(_json) {
+				if(_json.status=="success"){
+					ajaxfindexpresstemplate(_json.data.id,_json);
+				}
+			}
+		});
+		
+		return false;
+	});
+	$("#uploadfile").bind('change',ajaxUploadPicture);
+	$("#themeGroupId").bind('change',ajaxLoadGroupTheme);
+	
+	//加载物流模板
+	jQuery("#expresstemplateId").append("<option value=''></option>");
+	$("#expresstemplateId").select2(); 
+	
+	//默认详细地址
+	var province=$('#province').val();
+	var city=$('#city').val();
+	var area=$('#area').val();
+	showAddress(province,city,area);
+
+});
+
+//加载物流模板
+function ajaxfindexpresstemplate(siteId,site){
+	jQuery.ajax({
+		url : ctx+"/spexpresstemplate/list/json?siteId="+siteId,  
+		type : "post",
+		dataType : "json",
+		success : function(_json) {
+			if(_json.status=="error"){
+				return;
+			}else{
+				jQuery("#expresstemplateId").empty();
+				
+					
+				jQuery(_json.data).each(function(i,_obj){
+					jQuery("#expresstemplateId").append("<option value='"+_obj.id+"'>"+_obj.name+"</option>");
+				});
+				$("#expresstemplateId").select2(); 
+				
+			}
+			showdata(site);
+		}
+	});
+}
+
+function ajaxUploadPicture(){
+	jQuery.ajaxFileUpload({
+		        url: "${ctx}/upload/image?url=/upload/images/", //用于文件上传的服务器端请求地址
+		        secureuri: false, //是否需要安全协议，一般设置为false
+		        fileElementId: 'uploadfile', //文件上传域的ID
+		        dataType: 'json', //返回值类型 一般设置为json
+		        success: function (data, status)  //服务器成功响应处理函数
+		        {
+		      	 jQuery("#logo").val(data.data); 
+		      	 jQuery("#headimgsrc").attr("src",ctx+data.data); 
+		      	 //bind
+		      	 $("#uploadfile").bind('change',ajaxUploadPicture); 
+		        },
+		        error: function (data, status, e)//服务器响应失败处理函数
+		        {
+		       	 alert(e);
+		        }
+		    });
+}
+
+function ajaxLoadGroupTheme(){
+	var groupId=$("#themeGroupId").val();
+	if(groupId==""){
+		return false;
+	}
+	jQuery.ajax({
+		url : ctx+"/cms/themeGroup/ajax/findGroupTheme",  
+		type : "post",
+		data : {"groupId":groupId},
+		dataType : "json",
+		success : function(_json) {
+			if(_json.status=="error"){
+				return;
+			}
+			if(_json.data==null){
+				return;
+			}
+			if(_json.data['site']!=null){	
+		       	 //站点主题
+		         var siteThemeIds=_json.data['site'];
+		       	 $("#tr_site").find("input[type='radio']").each(function(i,obj){
+		       		 if(siteThemeIds.indexOf(obj.value)!=-1){
+		       			 obj.checked=true;
+		       		 }else{
+		       			 obj.checked=false;
+		       		 }
+		       	 });
+			}
+			if(_json.data['channel']!=null){
+		       	 //栏目主题
+		       	 var channelThemeIds=_json.data['channel']; 
+		       	 $("#tr_channel").find("input[type='radio']").each(function(i,obj){ 
+		       		 if(channelThemeIds.indexOf(obj.value)!=-1){
+		       			 obj.checked=true;
+		       		 }else{
+		       			 obj.checked=false;   
+		       		 }
+		       	 });
+			}
+			
+		}
+	});
+}
+
+function ajaxfinduser(){    
+	jQuery.ajax({
+		url : ctx+"/shop/user/list/json",  
+		type : "post",
+		dataType : "json",
+		success : function(_json) {
+			if(_json.status=="error"){
+				return;
+			}else if(_json.status=="all"){
+				
+				jQuery("#userId").append("<option value=''></option>");
+				jQuery(_json.data).each(function(i,_obj){
+					jQuery("#userId").append("<option value='"+_obj.id+"'>"+_obj.account+"</option>");
+				});
+				$('#user').get(0).appendChild($('#userId').get(0));
+				$("#userId").select2(); 
+				$('#user').find('#userId').prev().css("width","270px");
+				
+			}else{
+				var yonghu=$('#yonghu');
+				yonghu.prev().val(_json.queryBean.id);
+				yonghu.text(_json.queryBean.account);
+				yonghu.prev().text(_json.queryBean.account);
+				$('#user').get(0).appendChild(yonghu.prev().get(0));
+				$('#user').get(0).appendChild(yonghu.get(0));
+				
+			}
+			
+		}
+	});
+}
+
+function showdata(result) {
+	editor.sync(); 
+	for (var s in result.data) {
+		set_val(s, result.data[s]);
+	}
+	
+	//保存以前店铺管理人的id
+	$("#user_id").val(result.data['userId']);
+	$("#userId").select2("val", result.data['userId']);
+	//查询自定义字段
+	findPropertyByBusiness(result.data['id'],'site','1');  
+	//页脚
+	editor.html(result.data['footer']);   
+	//logo
+	 $("#headimgsrc").attr("src",ctx+ result.data["logo"]); 
+	//主题组
+	 $("#themeGroupId").select2("val", result.data['themeGroupId']);    
+	//用户
+	/*  $("#userId").select2("val", result.data['userId']);  */
+	//物流模板
+	 $("#expresstemplateId").select2("val", result.data['expresstemplateId']); 
+	 //站点主题
+	 var siteThemIds=result.data['siteThemeIds']; 
+	 $("#tr_site").find("input[type='radio']").each(function(i,obj){
+		 if(siteThemIds.indexOf(obj.value)!=-1){
+			 obj.checked=true;
+		 }else{
+			 obj.checked=false;
+		 }
+	 });
+	 //图片
+	 if(result.data.pics!=null&&typeof(result.data.pics)!="undefined"){
+	 jQuery(result.data.pics).each(function(i,_obj){
+		 uploadBack(_obj.filepath,jQuery("#btn_upload"));
+	 });
+	 }
+	 
+	 //栏目主题
+	 var channelThemeIds=result.data['channelThemeIds']; 
+	 $("#tr_channel").find("input[type='radio']").each(function(i,obj){ 
+		 if(channelThemeIds.indexOf(obj.value)!=-1){
+			 obj.checked=true;
+		 }else{
+			 obj.checked=false;  
+		 }
+	 });
+	  //省市区级联
+	   addressInit('province', 'city', 'area',result.data.province,result.data.city,result.data.area);
+	  //坐标值
+	  $('#xCoordinate').val(result.data.xcoordinate);
+	  $('#yCoordinate').val(result.data.ycoordinate);
+	  
+	 hideAllTooltips(); 
+}
+/**
+function deleteSite(){
+	var id=jQuery("#id").val();
+	if(!id||id==""){
+		myalert("请选择你要删除的记录");
+		return;
+	}else{
+		var _url="${ctx}/cms/site/delete?id="+id;
+		var listurl="${ctx}/cms/site/list";
+		mydelete(_url,listurl);
+	}
+}
+**/
+
+function showSelDg(){
+	var businessId=$("#id").val();
+	if(businessId==null||businessId==""){
+		alert("添加自定义字段之前请先选择站点！");
+		return false;
+	}
+	$("#propertyModelType").val("site"); 
+	showdg(null,null,businessId);   
+}
+
+function setp(data){
+	//省市区级联
+	var province=data.province;
+	var city=data.city;
+	var district=data.district;
+	
+    addressInit('province','city','area',province,data.city,data.district);
+    showAddress(province,city,district);
+}
+
+function showAddress(province,city,area){
+	$('#address').val(province+" "+city+" "+area);
+	
+}
+//查看评价管理
+function commentManage(){
+	var id=$('#id').val();
+	if(!id||(id =='')){
+		myalert('请选择店铺！');
+	}else{
+		var name=$('#name').val();
+		url="/shop/spcomment/list?businessId="+id;
+		showDG(url,name);
+	}
+}
+//评价管理弹层
+function showDG(url,name){
+	$.layer({
+	    type: 2,
+	    shadeClose: true,
+	    shade: [0.3, '#000'],
+	    border: [5, 0.3, '#000'],
+	    iframe: {
+	        src: url
+	    },
+	    title: [
+	            name+' 评价管理',
+	            'border:none; background:#4F99C6; color:#fff;' ],
+	    area: ['800px','500px'],
+	    shift: 'top'
+	});
+}
+function uploadBack(imgUrl, obj) {
+	var urlValue = jQuery(obj).prev("div").find("#_url").val();
+	if (urlValue !== "" && urlValue != null) {
+		var c = jQuery(obj).prev("div").clone();
+		//var c2=jQuery(obj).prev("#_img").prev("#_url").clone();
+		jQuery(c).find("_url").val('');
+		jQuery(c).find("_img").attr('src', '');
+		jQuery(obj).before(c);
+		//jQuery(obj).before(c1);
+
+	}
+	jQuery(obj).prev("div").find("#_img").attr("src", ctx + "/" + imgUrl);
+	jQuery(obj).prev("div").find("#_url").val("/"+imgUrl);
+}
+function clearImg(th) {
+	var m = 0;
+	jQuery(th).parent().parent().find("div").each(
+			function(i, _select) {
+				m = m + 1;
+			});
+	if (m < 2) {
+		myinfo("至少保留一个副图片");
+		return;
+	}
+	jQuery(th).parent("div").remove();
+}
+
+//金币抵现比率
+function queryRebate(th){
+	var money = $(th).val();
+		var isNum = /^[0-9]{1,5}$/;
+		if( money.replace(/(^s*)|(s*$)/g, "").length != 0){
+			
+			//验证输入是否为数字
+			if(!isNum.test(money)){
+	    		if(money>0){
+	    			var _index = money.indexOf(".");
+	    			var price = money.substring(0,_index);
+	    			$(th).val(price);
+	    		}else if(money<=0){
+	    			alert("请输入正数！");
+	    			$(th).val("");
+	    		}else{
+	    			alert("请输入数字！");
+	    			$(th).val("");
+	    		}
+	    	}else{
+	    		if(money > 100){
+	    			alert("最大金币抵现百分比为 100");
+					$(th).val("");
+	    		}
+	    	}
+	}
+}
+
+//提交操作
+function mySubmit(){
+	
+	//金币抵现百分比，非空验证
+	var jinbiOffsetPercent=$("#jinbiOffsetPercent").val();
+	if( !jinbiOffsetPercent || jinbiOffsetPercent==""){
+		alert("请输入现金抵现百分比！");
+		return ;
+	}
+	
+	var maxAddScore=$("#maxAddScore").val();
+	if( !maxAddScore || maxAddScore==""){
+		alert("请填写分享最大积分！");
+		return ;
+	}
+	
+	var clickOnceScore=$("#clickOnceScore").val();
+	if( !clickOnceScore || clickOnceScore==""){
+		alert("请填写分享每次点击积分！");
+		return ;
+	}
+	
+	validateSubmit('updateForm','${ctx}/cms/site/list');
+}
+
+</script>
+
+
+
+<div class="operate panel panel-default" style="height:65px;">
+	<div class="panel-body">
+		<div class="pull-left">
+<form class="form-horizontal" method="post"  action="${ctx}/cms/site/list"  name="searchForm"  id="searchForm">
+	<input type="hidden" name="pageIndex" id="pageIndex" value="${(returnDatas.page.pageIndex)!'1'}" />
+<input type="hidden" name="sort" id="page_sort" value="${(returnDatas.page.sort)!'desc'}"  />
+<input type="hidden" name="order" id="page_order" value="${(returnDatas.page.order)!'id'}"  />
+			<label for="search_state"><b>站点是否可用:</b></label> 
+			 <select id="search_state" name="state" class="col-10" >
+				<option value="">全部</option>
+				<option value="1">是</option>
+				<option value="0">否</option>
+			</select>
+			<a  href="javascript:mySubmitForm('searchForm');"
+				class="btn btn-purple btn-sm">
+					查询 <i class="ace-icon fa fa-search icon-on-right bigger-10"></i>
+				</a>
+
+</form>
+		</div>
+		<div class="pull-right">
+			<!-- <div class="pull-right"> 
+				<a id="asave" onclick="validateSubmit('updateForm','${ctx}/cms/site/list');" class="btn btn-sm btn-primary">添加</a>
+				<a id="aupdate" onclick="validateSubmit('updateForm','${ctx}/cms/site/list');" class="btn btn-sm btn-primary">修改</a>
+				<a onclick="deleteSite();" class="btn btn-sm  btn-danger">删除</a> 
+			</div> -->
+			<div class="pull-right">
+				<div style="float:left;margin-right:100px;">
+					<button onclick="commentManage();"
+						class="btn  btn-sm  btn-primary">
+						<i class="ace-icon fa fa-search bigger-130"></i>查看店铺评价
+					</button>
+				</div>
+				<@shiro.hasPermission name="/cms/site/updateSelf" >
+				<div style="float: left; margin-right: 30px;">
+					<button onclick="mySubmit();" class="btn  btn-sm  btn-success">
+						<i class="ace-icon fa fa-floppy-o bigger-130"></i>保存
+					</button>
+				</div>
+			</@shiro.hasPermission>
+				<@shiro.hasPermission name="/cms/site/update" >
+				
+				<div style="float: left; margin-right: 100px;">
+					<button onclick="myhref('${ctx}/cms/site/list')"
+						class="btn  btn-sm  btn-primary">
+						<i class="ace-icon glyphicon glyphicon-plus"></i>新增
+					</button>
+				</div>
+				
+				<div style="float: left; margin-right: 30px;">
+					<button onclick="validateSubmit('updateForm','${ctx}/cms/site/list')" class="btn  btn-sm  btn-success">
+						<i class="ace-icon fa fa-floppy-o bigger-130"></i>保存
+					</button>
+				</div>
+				</@shiro.hasPermission>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- /.page-header -->
+
+
+
+<div class="row">
+	<div class="col-xs-12">
+<@uploadMacro.upload />
+<@mapMacro.map />
+
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="col-sm-3 sub_left_menu ">
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>名称</th>
+								<th>网站类型</th>
+							</tr>
+						</thead>
+						<tbody>
+				    <#if (returnDatas.data??)&&(returnDatas.data?size>0)>
+					   <#list returnDatas.data as _data>
+
+							<tr id="${(_data.id)!''}"> 
+								<td>${(_data.name)!''}</td>
+								<td>${(_data.siteType)!''}</td>		 
+							</tr>
+                         </#list>
+					 </#if>
+						</tbody>
+					</table>
+				</div>
+
+
+				<div class="col-sm-9">
+					<div style="display:none">
+					<input name="userId" type="hidden"/>	
+					<span id="yonghu"></span>				
+					</div>
+					<div style="display:none" >
+					<select name="userId" id="userId"  ></select>
+					</div>
+					<form class="form-horizontal" method="post"  action="${ctx}/cms/site/update"  name="updateForm" id="updateForm">
+							
+						<input type="hidden" id="id" name="id" value=""> 
+						<input type="hidden" id="user_id" name="user_id" value=""> 
+						<input type="hidden" id="pic" name="pic" value=""> 
+						<table class="table table-bordered">
+							<tbody>
+							 	<tr>
+									<th><nobr>用户* </nobr></th>
+									<td id="user">
+									
+									</td>
+						
+								</tr> 
+								<tr>
+									<th>站点名称*</th>
+									<td> 
+									<input type="text"  name="name" id="name" class="form-control">
+									</td>
+								</tr>
+									<tr>
+								<th>商家编码*</th>
+								<td >
+								<input type="text" class="form-control"
+										name="sitecode" id="sitecode" >
+									
+								</td>
+								</tr>
+								<tr>
+									<th>站点标题*</th>
+								<td>
+								<input type="text"  name="title" id="title" class="form-control" /></td>
+								</tr>
+								<tr>
+									<th>网站类型*</th>
+								<td ><select class="form-control col-10"
+										id="siteType" name="siteType">
+											 <option value="网站">网站</option> 
+											<option value="商城">商城</option>
+											 <option value="论坛">论坛</option>	 										
+									</select></td>
+								</tr>	
+								
+								<tr>
+									<th>页脚*</th>
+								<td>
+								   <textarea id="footer" name="footer"></textarea>
+								</td>
+								
+								</tr>
+								<tr>
+								<th>选择店铺坐标</th>
+								<td >
+								<div style="position:relative;">
+									<input type="text" id="xCoordinate" name="xCoordinate"/>
+									<input type="text" id="yCoordinate" name="yCoordinate"/>
+									<a class="btn btn-sm btn-primary" 
+									style="height:35px;width:100px;display:block;position:absolute;right: 15px;bottom: 0px;" 
+									onclick="showMap('xCoordinate','yCoordinate',setp);" href="####">
+								   	      选择店铺位置
+									 </a>
+									 </div>
+								</td>
+								</tr>
+								<tr>
+								<th>省*</th>
+								<td ><select class="form-control col-10"
+										id="province" name="province">
+									</select></td>
+								</tr>
+								<tr>
+								<th>市*</th>
+								<td ><select class="form-control col-10"
+										id="city" name="city">
+									</select></td>
+								</tr>
+								<tr>
+								<th>区*</th>
+								<td ><select class="form-control col-10"
+										id="area" name="area">
+									</select></td>
+								</tr>
+								<tr>
+								<th>详细地址*</th>
+								<td ><input type="text" class="form-control"
+										id="address" name="address" />
+									</td>
+								</tr>
+								<tr>
+									<th>物流模板*</th>
+									<td id="express">
+										<select name="expresstemplateId" id="expresstemplateId" style="width:270px;"></select>
+									</td>
+								</tr>
+								
+								<tr>
+								<th>是否允许评论</th>
+								<td ><select class="form-control col-10"
+										id="isCanComment" name="isCanComment">
+										<option value="1">是</option>
+										<option value="0">否</option>
+									</select></td>
+								</tr>
+								<!-- <tr>
+								<th>是否审核评论</th>
+								<td ><select class="form-control col-10"
+										id="isCheckComment" name="isCheckComment">
+										<option value="1">是</option>
+										<option value="0">否</option>
+									</select></td>
+								</tr> -->
+								<tr>
+								<th>是否验证库存</th>
+								<td ><select class="form-control col-10" id="isValidateStock" name="isValidateStock">
+										<option value="1">是</option>
+										<option value="0">否</option>
+									</select></td>
+								</tr>
+								<tr>
+								<th>格式化金额显示</th>
+								<td ><input type="text" class="form-control"
+										id="moneyFormat" name="moneyFormat" value="￥"/>
+									</td>
+								</tr>
+								<tr>
+									<th>金币抵现百分比（订单总价 %）</th>
+									<td >
+										<input type="text" class="form-control" id="jinbiOffsetPercent" name="jinbiOffsetPercent" onblur="queryRebate(this);"/>
+									</td>
+								</tr>
+								<tr>
+								<th>1元人民币兑金币个数</th>
+								<td ><input type="text" class="form-control"
+										id="exchangeRate" name="exchangeRate" value="100"/>
+									</td>
+								</tr>
+								<tr>
+								<th>自动确认订单时间(天)</th>
+								<td >
+								<input type="text" class="form-control"
+										name="overOrder" id="overOrder" value="6">
+									
+								</td>
+								</tr>
+								<tr>
+								<th>自动关闭订单时间(小时)</th>
+								<td >
+								<input type="text" class="form-control"
+										name="closeOrder" id="closeOrder" value="2">
+								</td>
+								</tr>
+								<tr>
+								<th>分享好友获得最大积分</th>
+								<td >
+								<input type="text" class="form-control"
+										name="maxAddScore" id="maxAddScore">
+								</td>
+								</tr>
+								<tr>
+								<th>好友每次点击经销商获得积分</th>
+								<td >
+								<input type="text" class="form-control"
+										name="clickOnceScore" id="clickOnceScore">
+								</td>
+								</tr>
+								<tr>
+									<th><nobr>关键字 </nobr></th>
+									<td><input type="text" class="form-control"
+										name="keywords" id="keywords"></td>
+
+								</tr>
+								<tr>
+									<th><nobr>联系人* </nobr></th>
+									<td><input type="text" class="form-control"
+										name="contacts" id="contacts"></td>
+								</tr>
+								
+								<tr>
+								<th><nobr>电话*</nobr></th>
+									<td><input type="text" class="form-control"
+										name="phone" id="phone"></td>
+								</tr>
+								
+								
+								<tr>
+									<th><nobr>QQ*</nobr></th>
+									<td><input type="text" class="form-control"
+										name="qq" id="qq"></td>
+		
+								</tr>
+								
+								
+								<tr>
+                                    <th><nobr>网站LOGO*</nobr></th>
+								   <td>
+									  <div style="padding-right: 40px;padding-left: 30px;position:relative;">
+								      		
+								          <input type="hidden" id="logo" name="logo" />
+								          <img id="headimgsrc" src="" style="width:200px;height: 100px;"   class="img-thumbnail col-12" >
+								           <a class="btn btn-sm btn-primary" style="height:35px;width:100px;display:block;position:absolute;right: 15px;bottom: 15px;" onclick="uploadImg(this,'logo','div','headimgsrc');" href="####">
+								   	      上传LOGO
+									      </a>
+									  </div>
+								   </td>
+								</tr>	
+								<tr>
+						<th>幻灯片*</th>
+						<td>
+							<div style="display: inline-block; position: relative;">
+								<input type='hidden' id='_url' name="_url" /> <img id='_img'
+									name='_img' style="width: 60px; height: 60px" /> <span
+									style="position: absolute; right: 0px; bottom: 0px; display: block; width: 100%; text-align: center; background: rgba(255, 255, 255, 0.6); cursor: pointer;"
+									onclick="clearImg(this);">删除</span>
+
+							</div>  <a class="btn btn-sm btn-primary"
+							style="height: 35px; width: 120px;"
+							####" onclick="uploadImgCallBack(this,'_url','td','_img',uploadBack);" id="btn_upload">商品副图片</a>
+						</td>
+					</tr>
+								
+								
+								<tr>
+									<th>主题*</th>
+									<td>
+										<select name="themeGroupId" id="themeGroupId" style="width:400px;">
+										   <option value=""></option>
+										   <#if listgroup??>
+										      <#list listgroup as en>
+										          <option value="${(en.id)!''}">${(en.name)!''}</option>
+										      </#list>
+										   </#if>
+										</select>
+										</td>
+								</tr>
+
+								<tr>
+									<th>描述</th>			
+									<td  class="col-sm-8"><textarea class="form-control" name="description" id="description" rows="3" class="col-xs-12" ></textarea></td>
+								</tr>
+								
+		                      
+							
+						 <!-- 	<tr id="tr_tag" class="myclose" ><td colspan="2" style="text-align: center;cursor:pointer;" ><i class="black ace-icon fa fa-cog">&nbsp;&nbsp;显示高级配置</i></td></tr>
+								<@propertyMacro.showSelColumn /> 
+								<tr class="moreconfig"> 
+								   <td colspan="2">
+								   <@myconfig />
+								    </td>
+								</tr>  -->
+								
+							</tbody>
+						</table>
+					</form>
+
+				</div>
+
+
+
+			</div>
+			<!-- /.span -->
+
+		</div>
+        <!-- 弹出层 -->
+        <@propertyMacro.selfColumn/> 
+
+		<#if returnDatas.page??> <@h.pagetoolbar page=returnDatas.page
+		formId='searchForm' /> </#if>
+      
+	</div>
+</div>
+<!-- /.main-container -->
+
+
+
+<!-- 主题表格 -->
+<#macro myconfig >
+   <#assign listos=['pc','mobile','weixin']  listmodel=['site','channel','content']  m='' m2='2' />
+   <div class="tabbable"  id="div_tab">
+			<ul id="myTab4" class="nav nav-tabs">
+                <@themeMacro.li_ostype ostype='pc'  osname='电脑'  icon='fa fa-laptop' />
+                <@themeMacro.li_ostype ostype='mobile' osname='手机'  icon='fa fa-globe'/>
+                <@themeMacro.li_ostype ostype='weixin' osname='微信'  icon='fa fa-comments'/>
+			</ul>
+            
+	        <div class="tab-content">
+	                 <#list listos as os>
+						<div class="tab-pane" id="div_${os}_${m}">					
+							
+	                        <div>站点主题：</div>
+							<div class="tabbable tabs-left">
+							 	<@themeMacro.nav_left ostype='${os}' mark='${m}'/>
+								<div class="tab-content" id="tr_site">
+                                        <#list listmodel as mod>
+                                                  <@themeMacro.tabshow ostype='${os}' modelType='${mod}' mark='${m}' />
+                                        </#list>
+								</div>
+							</div>
+							
+							    <div>下级主题：</div>
+								<div class="tabbable tabs-left" >
+							 	<@themeMacro.nav_left ostype='${os}' mark='${m2}'/>
+								<div class="tab-content" id="tr_channel">
+                                        <#list listmodel as mod>
+                                                  <@themeMacro.tabshow ostype='${os}' modelType='${mod}' mark='${m2}' />
+                                        </#list>
+								</div>
+							</div>
+						</div>
+	                 </#list>
+	                 
+	         </div>
+	</div>
+</#macro>
+
+
+</#escape>

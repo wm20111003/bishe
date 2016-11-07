@@ -1,0 +1,7 @@
+<!-- 根据标识查询栏目 -->
+<#macro findChannelBySort  channelSort='' ctx='${ctx}'>
+	<@cms_channel_sort siteId='${siteId}' ostype='${ostype}' channelSort='${channelSort}'>
+		<#if channel_link??>${ctx}${(channel_link.link)!''}</#if>
+	</@cms_channel_sort>
+</#macro>
+

@@ -1,0 +1,63 @@
+<SCRIPT type="text/javascript">
+	var channelSelectSetting = {
+			callback: {
+				onClick: clickChannelValue
+			},
+		data : {
+			simpleData : {
+				enable : true,
+				idKey : "id",
+				pIdKey : "pid",
+				rootPId : "null",
+			}
+		}
+	};
+	
+	
+	function clickChannelValue(event, treeId, treeNode) {
+		jQuery("#pname").val(treeNode.name);
+		jQuery("#pid").val(treeNode.id);
+	    
+	    
+	};
+	
+	
+
+	$(document).ready(function() {
+		var siteId=jQuery("#siteIdTop").val();
+		if(siteId==null||siteId==""){
+			alert("没有选择站点");
+			return;
+		}
+		jQuery.post("${ctx}/cms/channel/list/json?siteId="+siteId,
+				function(_json) {
+					if (_json.status == "success") {
+						$.fn.zTree.init($("#channelTree"), channelSelectSetting,_json.data);
+						var zTree =$.fn.zTree.getZTreeObj("channelTree");
+				    	 zTree.expandAll(false); 
+				    	 selectZtreeOneNode(jQuery("#pid").val(),"channelTree");
+				    	 
+						
+					} else {
+						myalert(_json.message);
+					}
+				});
+	});
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+</SCRIPT>
+
+
+
+
+<div>
+	<ul id="channelTree" class="ztree"></ul>
+</div>

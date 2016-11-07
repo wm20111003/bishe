@@ -1,0 +1,103 @@
+<!-- 页头 -->
+<#macro head title>
+<#import "/common/tag.html" as tag /> 
+<!DOCTYPE  html "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" >
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta
+	content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+	name="viewport">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<title>${(title)!'毕设'}</title> <#assign mctx='${ctx}/userstatic/common' />
+<!-- <link href="${mctx}/css/public.css" rel="stylesheet"> -->
+<link rel="stylesheet" type="text/css" href="${mctx}/css/common.css"/>
+<link rel="stylesheet" type="text/css" href="${mctx}/css/layout.css"/>
+<link rel="stylesheet" type="text/css" href="${mctx}/css/md-min.css"/>
+<link rel="stylesheet" type="text/css" href="${mctx}/css/flexslider.css"/>
+<script type="text/javascript" src="${mctx}/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="${mctx}/js/jquery.flexslider-min.js"></script>
+<script type="text/javascript" src="${mctx}/js/jquery.form.js"></script>
+<script type="text/javascript" src="${mctx}/js/layer.min.js"></script>
+<script type="text/javascript" src="${ctx}/js/coms/common/common.js"></script>
+<script type="text/javascript" src="${ctx}/js/pagination/jquery.pagination.js"></script>
+<script type="text/javascript" src="${ctx}/js/utils.js"></script>
+</head>
+</#macro>
+<#macro top >
+	<div class="top">
+			<div class="container">
+				<div class="row">
+				<@sp_member_bean>
+					<#if tag_bean??>
+					<div class="col4 center">
+						<a href="javascript:" class="btn">${tag_bean.account}，欢迎您!</a>
+					</div>
+					<div class="col2 center">
+						<a href="${ctx}/front/member/tuichu?linkurl=<@tag.findChannelBySort 'login' '' />" style="color:red" >退出</a>
+					</div>
+					<#else>
+					<div class="col2 center">
+						<a href="<@tag.findChannelBySort 'login'/>" class="btn">登录</a>
+					</div>
+					<div class="col2 center">
+						<a href="<@tag.findChannelBySort 'register'/>" style="color:green;" class="btn">注册</a>
+					</div>
+					</#if>
+					<div class="w2 right">
+						<a href="javascript:void(0)" class="btn">English</a>
+					</div>
+				</@sp_member_bean>
+				</div>
+			</div>
+		</div>
+</#macro>
+<#macro navigator channelSort>
+<div class="container">
+	<img src="${mctx}/images/head.jpg"/>
+</div>
+		<div class="container">
+			<ul class="clear-fix navigator list">
+	<@cms_channel_list siteId='${siteId}' ostype='${ostype}'  position='上' ctx='${ctx}'>
+		<#if channel_list??>
+			<#list channel_list as c>
+				<#if channelSort == '${c.channelSort}'>
+				<li	class="active"><a href="<@tag.findChannelBySort '${c.channelSort}'/>">${c.name!''}</a>
+				</li>
+				<#else>
+					<li><a href="<@tag.findChannelBySort '${c.channelSort}'/>">${c.name!''}</a></li>
+				</#if>
+			</#list>
+		</#if>
+	</@cms_channel_list>
+		</ul>
+	</div>
+</#macro>
+<#macro foot siteId ostype index=0 >
+		<div class="footer mg-t20 ">
+			<div class="container">
+					<div class="col5">
+						郑州大学官方网站 
+					</div>
+					<div class="col5">
+						<a href="javascript:">豫ICP备05002456号 </a>
+					</div>
+					<div class="col2 center">
+						地址:
+					</div>
+					<div class="col5">
+						郑州市科学大道100号
+					</div>
+					<div class="col5">
+						<a href="<@tag.findChannelBySort 'shouye'/>">首页</a>
+						<a href="<@tag.findChannelBySort 'shouye'/>" class="shouye_btn"></a>
+					</div>
+					
+			</div>
+		</div>
+</#macro>
+</html>

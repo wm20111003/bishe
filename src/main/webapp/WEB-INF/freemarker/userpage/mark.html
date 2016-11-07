@@ -1,0 +1,127 @@
+<#import "/userpage/common/common.html" as cmMacro />  
+<#assign mctx='${ctx}/userstatic/common' />
+ <@cmMacro.head title='档案记录'/>
+		<style type="text/css">
+			.connel dd b{width: 100px;display: inline-block;text-align: right;padding: 5px 20px 5px 10px;}
+			.nodata .tips{color:#999;}
+			.nodata .tips a{text-decoration: underline;}
+			.nodata .tips a:hover{color:#555;}
+		</style>
+	<body>
+		<@cmMacro.top/>
+		<@cmMacro.navigator channelSort='querycourse'/>
+			
+		<div class="container mg-t20">
+			<div class="container-course" style="min-height:420px;">
+			
+			<@sp_member_bean>
+					<#if tag_bean??>
+							<!--没有内容   -->
+						<#else>
+							<!-- 如果没有登录 则把<div class="majorName"></div>放到这里边 -->
+					</#if>
+			</@sp_member_bean>
+			<div class="container-course-top">
+				<ul class="clearfix">
+					<li><a href="javascript:void(0)" class="active">第一学期</a></li>
+					<li><a href="javascript:void(0)">第二学期</a></li>
+					<li><a href="javascript:void(0)">第三学期</a></li>
+					<li><a href="javascript:void(0)">第四学期</a></li>
+					<li><a href="javascript:void(0)">第五学期</a></li>
+					<li><a href="javascript:void(0)">第六学期</a></li>
+					<li><a href="javascript:void(0)">第七学期</a></li>
+					<li><a href="javascript:void(0)">第八学期</a></li>
+				</ul>
+			</div>
+			<div class="container-course-table">
+				<table>
+					<tr>
+						<th>课程名</th>
+						<th>修习类型</th>
+						<th>学分</th>
+						<th>成绩</th>
+						<th>绩点</th>
+					</tr>
+					<tbody id="J_tabletpl">
+						
+					</tbody>
+					
+				</table>
+			</div>
+		</div>
+		</div>
+<@cmMacro.foot siteId='${siteId}' ostype='${ostype}' index=1 />	
+<script type="text/javascript">
+			$('.container-course-top').on('click','li a',function(){
+				$(this).closest('li').siblings().find('a').removeClass('active');
+				$(this).addClass('active');
+				var index = $(this).closest('li').index()+1;
+				loadData(index);
+			});
+			$(function(){
+				loadData(1);
+			})
+	function loadData(param){
+		Util.ajax.postJson("${ctx}/front/workmark/lookmark/json",{"item":param},function(json,status){
+			if(json.status == "success"){
+				Util.ajax.loadTemp("#J_tabletpl",$("#T_tabletpl"),json);
+			}
+		});
+	}
+			
+			Handlebars.registerHelper("toType",function(courseType){
+				if(courseType == "1"){
+					return "必修";
+				}else if(courseType == "0"){
+					return "选修";
+				}
+				return "其他";
+			});
+			Handlebars.registerHelper("isnull",function(mark){
+				if(!mark){
+					return "/";
+				}
+				return mark;
+			});
+			Handlebars.registerHelper("chugpa",function(gpa){
+				if(!gpa){
+					return "/";
+				}
+				return gpa/10;
+			});
+		</script>
+<script type="text/x-handlebars-template" id="T_tabletpl">
+{{#if data}}
+{{#each data}}
+	<tr>
+		<td>{{courseName}}</td>
+		<td>{{toType courseType}}</td>
+		<td>{{credit}}</td>
+		<td>{{isnull mark}}</td>
+		<td>{{chugpa gpa}}</td>	
+	</tr>
+{{/each}}
+{{else}}
+	<tr>
+		<td colspan="5"><div class="nodata">暂时没数据</div></td>
+	</tr>
+{{/if}}
+</script>
+
+
+<script type="text/javascript"> 
+ 
+    // unblock when ajax activity stops 
+  
+    $(document).ready(function() { 
+        $('#pageDemo2').click(function() { 
+            $.blockUI({ message: '<h1><img src="busy.gif" /> Just a moment...</h1>' }); 
+        }); 
+    }); 
+ 
+</script> 
+ 
+<div id="domMessage" style="display:none;"> 
+    <h1>We are processing your request.  Please be patient.</h1> 
+</div> 
+	</body>
